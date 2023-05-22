@@ -2,11 +2,9 @@ import {
   Box,
   Flex,
   Button,
-  useColorModeValue,
   Stack,
-  Heading,
-  Link,
   useDisclosure,
+  Image,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -14,6 +12,8 @@ import {
   ModalCloseButton,
   ModalBody,
   Text,
+  HStack,
+  Link,
 } from '@chakra-ui/react'
 import { useState, useRef } from 'react'
 import { useSelector } from 'react-redux'
@@ -43,24 +43,42 @@ export default function Navbar() {
 
   return (
     <>
-      <Box px={24}>
+      <Box
+        px={12}
+        py={3}
+        borderBottomColor={'whiteAlpha.300'}
+        borderBottomWidth={1}
+      >
         <Flex h={16} alignItems={'center'} justifyContent={'space-between'}>
           <Flex alignItems={'center'} gap={6}>
-            <Link
-              as={NextLink}
-              href={'/'}
-              style={{ textDecoration: 'none' }}
-              _focus={{ boxShadow: 'none' }}
-            >
-              <Heading
-                size={'sm'}
-                fontFamily={'mono'}
-                textTransform={'uppercase'}
-                letterSpacing={3}
+            <Image
+              alt="Stargaze logo"
+              src="/assets/stargaze_logo_800.svg"
+              w={130}
+              h={'auto'}
+            ></Image>
+            <HStack gap={3}>
+              <Link
+                as={NextLink}
+                href={'/'}
+                style={{ textDecoration: 'none' }}
+                _focus={{ boxShadow: 'none' }}
               >
-                Inter Collection
-              </Heading>
-            </Link>
+                <Button variant={'ghost'} _hover={{ background: 'gray.900' }}>
+                  NFT Transfer
+                </Button>
+              </Link>
+              <Link
+                as={NextLink}
+                href={'/mycollections'}
+                style={{ textDecoration: 'none' }}
+                _focus={{ boxShadow: 'none' }}
+              >
+                <Button variant={'ghost'} _hover={{ background: 'gray.900' }}>
+                  My Collections
+                </Button>
+              </Link>
+            </HStack>
           </Flex>
 
           <Flex alignItems={'center'}>
@@ -76,11 +94,9 @@ export default function Navbar() {
                 </Flex>
               ) : (
                 <Button
-                  as={'a'}
-                  display={{ base: 'none', md: 'inline-flex' }}
+                  colorScheme="stargaze"
                   fontSize={'md'}
-                  px={8}
-                  href={'#'}
+                  px={16}
                   minW={150}
                   onClick={onOpen}
                 >
