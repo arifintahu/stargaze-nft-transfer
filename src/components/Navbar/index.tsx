@@ -15,6 +15,7 @@ import {
   HStack,
   Link,
   IconButton,
+  Tooltip,
 } from '@chakra-ui/react'
 import { useState, useRef, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
@@ -22,7 +23,8 @@ import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import { setChainId, selectChainId } from '@/store/chainSlice'
 import { trimAddress } from '@/utils/helpers'
-import { CopyIcon } from '@chakra-ui/icons'
+import { CopyIcon, CheckIcon } from '@chakra-ui/icons'
+import { FiLogOut } from 'react-icons/fi'
 
 const menuList = [
   {
@@ -39,6 +41,7 @@ const menuList = [
 
 export default function Navbar() {
   const [address, setAddress] = useState('')
+  const [isCopied, setIsCopied] = useState(false)
   const { isOpen, onOpen, onClose } = useDisclosure()
   const chainId = useSelector(selectChainId)
   const finalRef = useRef(null)
@@ -58,6 +61,19 @@ export default function Navbar() {
       alert('Please install keplr extension')
     }
   }
+
+  const copyAddress = () => {
+    navigator.clipboard.writeText(address)
+    setIsCopied(true)
+  }
+
+  useEffect(() => {
+    if (isCopied) {
+      setTimeout(() => {
+        setIsCopied(false)
+      }, 2000)
+    }
+  }, [isCopied])
 
   useEffect(() => {
     dispatch(setChainId('elgafar-1'))
@@ -127,13 +143,28 @@ export default function Navbar() {
                     <Text fontSize={'sm'}>{trimAddress(address)}</Text>
                     <Text fontSize={'sm'}>0 STARS</Text>
                   </Flex>
-                  <IconButton
-                    size={'sm'}
-                    variant={'ghost'}
-                    aria-label="Copy address"
-                    _hover={{ background: 'gray.900' }}
-                    icon={<CopyIcon />}
-                  />
+                  <Flex gap={1}>
+                    <Tooltip label={isCopied ? 'Copied' : 'Copy Address'}>
+                      <IconButton
+                        size={'sm'}
+                        variant={'ghost'}
+                        aria-label="Copy Address"
+                        _hover={{ background: 'gray.900' }}
+                        icon={isCopied ? <CheckIcon /> : <CopyIcon />}
+                        onClick={copyAddress}
+                      />
+                    </Tooltip>
+                    <Tooltip label="Disconnect">
+                      <IconButton
+                        size={'sm'}
+                        variant={'ghost'}
+                        aria-label="Disconnect"
+                        _hover={{ background: 'gray.900' }}
+                        icon={<FiLogOut />}
+                        onClick={() => setAddress('')}
+                      />
+                    </Tooltip>
+                  </Flex>
                 </Flex>
               ) : (
                 <Button
