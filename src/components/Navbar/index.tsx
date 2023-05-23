@@ -14,13 +14,15 @@ import {
   Text,
   HStack,
   Link,
+  IconButton,
 } from '@chakra-ui/react'
-import { useState, useRef } from 'react'
-import { useSelector } from 'react-redux'
+import { useState, useRef, useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import { setChainId, selectChainId } from '@/store/chainSlice'
 import { trimAddress } from '@/utils/helpers'
+import { CopyIcon } from '@chakra-ui/icons'
 
 const menuList = [
   {
@@ -41,6 +43,7 @@ export default function Navbar() {
   const chainId = useSelector(selectChainId)
   const finalRef = useRef(null)
   const router = useRouter()
+  const dispatch = useDispatch()
 
   const handleKeplr = async () => {
     if (window.keplr) {
@@ -56,6 +59,10 @@ export default function Navbar() {
     }
   }
 
+  useEffect(() => {
+    dispatch(setChainId('elgafar-1'))
+  })
+
   return (
     <>
       <Box
@@ -63,6 +70,9 @@ export default function Navbar() {
         py={3}
         borderBottomColor={'whiteAlpha.300'}
         borderBottomWidth={1}
+        position={'sticky'}
+        top={0}
+        bg={'black'}
       >
         <Flex h={16} alignItems={'center'} justifyContent={'space-between'}>
           <Flex alignItems={'center'} gap={6}>
@@ -100,12 +110,30 @@ export default function Navbar() {
             <Stack direction={'row'} spacing={7}>
               {!!address ? (
                 <Flex
-                  flexDirection={'column'}
-                  justifyContent={'center'}
-                  alignItems={'flex-end'}
+                  borderColor={'whiteAlpha.300'}
+                  borderWidth={1}
+                  py={2}
+                  px={4}
+                  borderRadius={'md'}
+                  minW={300}
+                  justifyContent={'space-between'}
+                  alignItems={'center'}
                 >
-                  <Text fontSize={'sm'}>{trimAddress(address)}</Text>
-                  <Text fontSize={'sm'}>{''}</Text>
+                  <Flex
+                    flexDirection={'column'}
+                    justifyContent={'center'}
+                    alignItems={'flex-start'}
+                  >
+                    <Text fontSize={'sm'}>{trimAddress(address)}</Text>
+                    <Text fontSize={'sm'}>0 STARS</Text>
+                  </Flex>
+                  <IconButton
+                    size={'sm'}
+                    variant={'ghost'}
+                    aria-label="Copy address"
+                    _hover={{ background: 'gray.900' }}
+                    icon={<CopyIcon />}
+                  />
                 </Flex>
               ) : (
                 <Button
@@ -124,17 +152,12 @@ export default function Navbar() {
       </Box>
 
       <Modal finalFocusRef={finalRef} isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Connect an Interchain Wallet</ModalHeader>
+        <ModalOverlay bg={'whiteAlpha.500'} />
+        <ModalContent bg={'black'} borderRadius={'lg'}>
+          <ModalHeader>Select Wallet</ModalHeader>
           <ModalCloseButton />
           <ModalBody px={6} py={8}>
-            <Button
-              colorScheme="orange"
-              variant="outline"
-              width={'full'}
-              onClick={handleKeplr}
-            >
+            <Button colorScheme="stargaze" width={'full'} onClick={handleKeplr}>
               Keplr Wallet
             </Button>
           </ModalBody>
