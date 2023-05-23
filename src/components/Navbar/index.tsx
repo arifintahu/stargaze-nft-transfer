@@ -18,14 +18,29 @@ import {
 import { useState, useRef } from 'react'
 import { useSelector } from 'react-redux'
 import NextLink from 'next/link'
+import { useRouter } from 'next/router'
 import { setChainId, selectChainId } from '@/store/chainSlice'
 import { trimAddress } from '@/utils/helpers'
+
+const menuList = [
+  {
+    id: 1,
+    route: '/',
+    name: 'NFT Transfer',
+  },
+  {
+    id: 2,
+    route: '/mycollections',
+    name: 'My Collections',
+  },
+]
 
 export default function Navbar() {
   const [address, setAddress] = useState('')
   const { isOpen, onOpen, onClose } = useDisclosure()
   const chainId = useSelector(selectChainId)
   const finalRef = useRef(null)
+  const router = useRouter()
 
   const handleKeplr = async () => {
     if (window.keplr) {
@@ -58,26 +73,26 @@ export default function Navbar() {
               h={'auto'}
             ></Image>
             <HStack gap={3}>
-              <Link
-                as={NextLink}
-                href={'/'}
-                style={{ textDecoration: 'none' }}
-                _focus={{ boxShadow: 'none' }}
-              >
-                <Button variant={'ghost'} _hover={{ background: 'gray.900' }}>
-                  NFT Transfer
-                </Button>
-              </Link>
-              <Link
-                as={NextLink}
-                href={'/mycollections'}
-                style={{ textDecoration: 'none' }}
-                _focus={{ boxShadow: 'none' }}
-              >
-                <Button variant={'ghost'} _hover={{ background: 'gray.900' }}>
-                  My Collections
-                </Button>
-              </Link>
+              {menuList.map((item) => (
+                <Link
+                  key={item.id}
+                  as={NextLink}
+                  href={item.route}
+                  style={{ textDecoration: 'none' }}
+                  _focus={{ boxShadow: 'none' }}
+                >
+                  {item.route === router.route ? (
+                    <Button colorScheme="stargaze">{item.name}</Button>
+                  ) : (
+                    <Button
+                      variant={'ghost'}
+                      _hover={{ background: 'gray.900' }}
+                    >
+                      {item.name}
+                    </Button>
+                  )}
+                </Link>
+              ))}
             </HStack>
           </Flex>
 
