@@ -19,6 +19,7 @@ import {
 import Head from 'next/head'
 import { useState, useRef, useEffect } from 'react'
 import { getChain, getDestinationChains } from '@/config'
+import { DestinationChain } from '@/config/types'
 import { ChevronDownIcon } from '@chakra-ui/icons'
 
 export default function Home() {
@@ -26,6 +27,13 @@ export default function Home() {
   const destChains = getDestinationChains()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const finalRef = useRef(null)
+
+  const [destChain, setDestChain] = useState(destChains[0])
+
+  const handleDestChain = (chain: DestinationChain) => {
+    setDestChain(chain)
+    onClose()
+  }
 
   return (
     <>
@@ -40,7 +48,7 @@ export default function Home() {
           <Box
             w="full"
             minH={400}
-            maxW={600}
+            maxW={700}
             borderRadius={'lg'}
             p={8}
             alignItems={'center'}
@@ -82,12 +90,12 @@ export default function Home() {
                 >
                   <Flex alignItems={'center'} gap={3}>
                     <Image
-                      src={'/assets/stargaze_star_white.svg'}
-                      alt="Stargaze logo"
+                      src={destChain.logo}
+                      alt={destChain.description}
                       w={25}
                       h={25}
                     ></Image>
-                    <Text fontWeight={'semibold'}>Stargaze</Text>
+                    <Text fontWeight={'semibold'}>{destChain.description}</Text>
                   </Flex>
                   <Flex>
                     <ChevronDownIcon fontSize={'lg'} />
@@ -167,7 +175,7 @@ export default function Home() {
         <ModalContent bg={'black'} borderRadius={'lg'}>
           <ModalHeader>Select destination chain</ModalHeader>
           <ModalCloseButton />
-          <ModalBody px={6} py={8}>
+          <ModalBody px={6} pb={8}>
             <SimpleGrid columns={2} spacing={10}>
               {destChains.map((chain) => (
                 <Flex
@@ -180,6 +188,7 @@ export default function Home() {
                   borderRadius={'md'}
                   cursor={'pointer'}
                   _hover={{ bg: 'satellite.100' }}
+                  onClick={() => handleDestChain(chain)}
                 >
                   <Image
                     src={chain.logo}
