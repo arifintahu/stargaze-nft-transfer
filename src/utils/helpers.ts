@@ -1,3 +1,6 @@
+import { Coin } from '@/config/types'
+import { Balance } from '@/utils/client/rest/cosmos/bank'
+
 export const trimAddress = (address: string): string => {
   const indexPrefix = address.indexOf('1')
   const first = address.slice(0, indexPrefix + 2)
@@ -5,16 +8,13 @@ export const trimAddress = (address: string): string => {
   return first + '...' + last
 }
 
-export const showBalance = (denom: string, amount: number) => {
-  if (denom.startsWith('a')) {
-    return `${Math.round((amount * 100) / 10 ** 18) / 100} ${denom
-      .slice(1)
-      .toUpperCase()}`
+export const showBalance = (balances: Balance[], coin: Coin) => {
+  const balance = balances.find((item) => item.denom === coin.minimalDenom)
+  if (!balance) {
+    return `0 ${coin.denom}`
   }
-  if (denom.startsWith('u')) {
-    return `${Math.round((amount * 100) / 10 ** 9) / 100} ${denom
-      .slice(1)
-      .toUpperCase()}`
-  }
-  return ''
+
+  const convertToDenom =
+    Math.floor((balance.amount * 100) / 10 ** coin.decimals) / 100
+  return `${convertToDenom.toLocaleString()} ${coin.denom}`
 }

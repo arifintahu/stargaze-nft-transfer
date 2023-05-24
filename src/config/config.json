@@ -1,26 +1,35 @@
 {
   "chain": {
-    "chain_id": "elgafar-1",
-    "description": "Stargaze Testnet",
+    "id": "elgafar-1",
+    "name": "Stargaze Testnet",
     "logo": "/assets/stargaze_star_gradient.svg",
     "rpc": "https://rpc.elgafar-1.stargaze-apis.com:443",
     "rest": "https://rest.elgafar-1.stargaze-apis.com",
-    "gas_price": "10ustars"
+    "gasPrice": "0.1ustars",
+    "coin": {
+      "denom": "STARS",
+      "minimalDenom": "ustars",
+      "decimals": 6
+    }
   },
   "destination_chains": [
     {
-      "chain_id": "gon-irishub-1",
-      "description": "IRISnet Testnet",
+      "id": "gon-irishub-1",
+      "name": "IRISnet Testnet",
       "logo": "/assets/irisnet.svg",
-      "port": "nft-transfer",
-      "channel": "channel-207"
+      "nftTransfer": {
+        "port": "nft-transfer",
+        "channel": "channel-207"
+      }
     },
     {
-      "chain_id": "gon-flixnet-1",
-      "description": "Omniflix Testnet",
+      "id": "gon-flixnet-1",
+      "name": "Omniflix Testnet",
       "logo": "/assets/omniflix.svg",
-      "port": "nft-transfer",
-      "channel": "channel-209"
+      "nftTransfer": {
+        "port": "nft-transfer",
+        "channel": "channel-209"
+      }
     }
   ]
 }

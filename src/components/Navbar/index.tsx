@@ -56,8 +56,8 @@ export default function Navbar() {
 
   const handleKeplr = async () => {
     if (window.keplr) {
-      await window.keplr.enable(chain.chain_id)
-      const offlineSigner = window.keplr.getOfflineSigner(chain.chain_id)
+      await window.keplr.enable(chain.id)
+      const offlineSigner = window.keplr.getOfflineSigner(chain.id)
       const accounts = await offlineSigner.getAccounts()
       if (accounts[0].address) {
         dispatch(setAddress(accounts[0].address))
@@ -82,7 +82,6 @@ export default function Navbar() {
   }, [isCopied])
 
   useEffect(() => {
-    console.log(address)
     if (address) {
       getBalances(chain.rest, address).then((response) => {
         setBalances(response.balances)
@@ -153,9 +152,7 @@ export default function Navbar() {
                   >
                     <Text fontSize={'sm'}>{trimAddress(address)}</Text>
                     <Text fontSize={'sm'}>
-                      {balances.length
-                        ? showBalance(balances[0].denom, balances[0].amount)
-                        : '0.00'}
+                      {showBalance(balances, chain.coin)}
                     </Text>
                   </Flex>
                   <Flex gap={1}>

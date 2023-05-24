@@ -66,11 +66,11 @@ export default function Home() {
                 <Flex alignItems={'center'} gap={3} p={3}>
                   <Image
                     src={chain.logo}
-                    alt={chain.description}
+                    alt={chain.name}
                     w={25}
                     h={25}
                   ></Image>
-                  <Text fontWeight={'semibold'}>{chain.description}</Text>
+                  <Text fontWeight={'semibold'}>{chain.name}</Text>
                 </Flex>
               </Box>
               <Box borderRadius={'md'} bg={'satellite.500'} px={6} py={3}>
@@ -87,11 +87,11 @@ export default function Home() {
                   <Flex alignItems={'center'} gap={3}>
                     <Image
                       src={destChain.logo}
-                      alt={destChain.description}
+                      alt={destChain.name}
                       w={25}
                       h={25}
                     ></Image>
-                    <Text fontWeight={'semibold'}>{destChain.description}</Text>
+                    <Text fontWeight={'semibold'}>{destChain.name}</Text>
                   </Flex>
                   <Flex>
                     <ChevronDownIcon fontSize={'lg'} />
@@ -175,7 +175,7 @@ export default function Home() {
             <SimpleGrid columns={2} spacing={10}>
               {destChains.map((chain) => (
                 <Flex
-                  key={chain.chain_id}
+                  key={chain.id}
                   alignItems={'center'}
                   gap={3}
                   p={3}
@@ -188,11 +188,11 @@ export default function Home() {
                 >
                   <Image
                     src={chain.logo}
-                    alt={chain.description}
+                    alt={chain.name}
                     w={25}
                     h={25}
                   ></Image>
-                  <Text fontWeight={'semibold'}>{chain.description}</Text>
+                  <Text fontWeight={'semibold'}>{chain.name}</Text>
                 </Flex>
               ))}
             </SimpleGrid>
