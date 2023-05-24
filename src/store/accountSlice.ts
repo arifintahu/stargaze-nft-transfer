@@ -3,22 +3,22 @@ import { AppState } from './index'
 import { HYDRATE } from 'next-redux-wrapper'
 
 // Type for our state
-export interface ChainState {
-  chainId: string
+export interface AccountState {
+  address: string
 }
 
 // Initial state
-const initialState: ChainState = {
-  chainId: '',
+const initialState: AccountState = {
+  address: '',
 }
 
 // Actual Slice
-export const chainSlice = createSlice({
-  name: 'chain',
+export const accountSlice = createSlice({
+  name: 'account',
   initialState,
   reducers: {
-    setChainId(state, action) {
-      state.chainId = action.payload
+    setAddress(state, action) {
+      state.address = action.payload
     },
   },
 
@@ -27,13 +27,13 @@ export const chainSlice = createSlice({
     [HYDRATE]: (state, action) => {
       return {
         ...state,
-        ...action.payload.chain,
+        ...action.payload.account,
       }
     },
   },
 })
 
-export const { setChainId } = chainSlice.actions
-export const selectChainId = (state: AppState) => state.chain.chainId
+export const { setAddress } = accountSlice.actions
+export const selectAddress = (state: AppState) => state.account.address
 
-export default chainSlice.reducer
+export default accountSlice.reducer

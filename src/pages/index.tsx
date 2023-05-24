@@ -48,7 +48,7 @@ export default function Home() {
           <Box
             w="full"
             minH={400}
-            maxW={700}
+            maxW={600}
             borderRadius={'lg'}
             p={8}
             alignItems={'center'}
@@ -62,9 +62,7 @@ export default function Home() {
             </Heading>
             <SimpleGrid columns={2} spacing={6} w={'full'}>
               <Box borderRadius={'md'} bg={'satellite.500'} px={6} py={3}>
-                <Text fontSize={'xs'} mb={2}>
-                  From
-                </Text>
+                <Text fontSize={'xs'}>From</Text>
                 <Flex alignItems={'center'} gap={3} p={3}>
                   <Image
                     src={chain.logo}
@@ -76,9 +74,7 @@ export default function Home() {
                 </Flex>
               </Box>
               <Box borderRadius={'md'} bg={'satellite.500'} px={6} py={3}>
-                <Text fontSize={'xs'} mb={2}>
-                  To
-                </Text>
+                <Text fontSize={'xs'}>To</Text>
                 <Flex
                   alignItems={'center'}
                   justifyContent={'space-between'}

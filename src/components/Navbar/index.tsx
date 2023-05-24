@@ -21,10 +21,13 @@ import { useState, useRef, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
-import { setChainId, selectChainId } from '@/store/chainSlice'
-import { trimAddress } from '@/utils/helpers'
 import { CopyIcon, CheckIcon } from '@chakra-ui/icons'
 import { FiLogOut } from 'react-icons/fi'
+
+import { setAddress, selectAddress } from '@/store/accountSlice'
+import { trimAddress, showBalance } from '@/utils/helpers'
+import { getChain } from '@/config'
+import { getBalances, Balance } from '@/utils/client/rest/cosmos/bank'
 
 const menuList = [
   {
@@ -40,21 +43,24 @@ const menuList = [
 ]
 
 export default function Navbar() {
-  const [address, setAddress] = useState('')
+  const chain = getChain()
+
   const [isCopied, setIsCopied] = useState(false)
+  const [balances, setBalances] = useState<Balance[]>([])
+
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const chainId = useSelector(selectChainId)
+  const address = useSelector(selectAddress)
   const finalRef = useRef(null)
   const router = useRouter()
   const dispatch = useDispatch()
 
   const handleKeplr = async () => {
     if (window.keplr) {
-      await window.keplr.enable(chainId)
-      const offlineSigner = window.keplr.getOfflineSigner(chainId)
+      await window.keplr.enable(chain.chain_id)
+      const offlineSigner = window.keplr.getOfflineSigner(chain.chain_id)
       const accounts = await offlineSigner.getAccounts()
       if (accounts[0].address) {
-        setAddress(accounts[0].address)
+        dispatch(setAddress(accounts[0].address))
         onClose()
       }
     } else {
@@ -76,8 +82,13 @@ export default function Navbar() {
   }, [isCopied])
 
   useEffect(() => {
-    dispatch(setChainId('elgafar-1'))
-  })
+    console.log(address)
+    if (address) {
+      getBalances(chain.rest, address).then((response) => {
+        setBalances(response.balances)
+      })
+    }
+  }, [address])
 
   return (
     <>
@@ -141,7 +152,11 @@ export default function Navbar() {
                     alignItems={'flex-start'}
                   >
                     <Text fontSize={'sm'}>{trimAddress(address)}</Text>
-                    <Text fontSize={'sm'}>0 STARS</Text>
+                    <Text fontSize={'sm'}>
+                      {balances.length
+                        ? showBalance(balances[0].denom, balances[0].amount)
+                        : '0.00'}
+                    </Text>
                   </Flex>
                   <Flex gap={1}>
                     <Tooltip label={isCopied ? 'Copied' : 'Copy Address'}>
@@ -161,7 +176,7 @@ export default function Navbar() {
                         aria-label="Disconnect"
                         _hover={{ background: 'gray.900' }}
                         icon={<FiLogOut />}
-                        onClick={() => setAddress('')}
+                        onClick={() => dispatch(setAddress(''))}
                       />
                     </Tooltip>
                   </Flex>
