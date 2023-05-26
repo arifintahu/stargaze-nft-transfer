@@ -21,11 +21,17 @@ import { useState, useRef, useEffect } from 'react'
 import { getChain, getDestinationChains } from '@/config'
 import { DestinationChain } from '@/config/types'
 import { ChevronDownIcon } from '@chakra-ui/icons'
-import SelectSearchCustom from '@/components/SelectSearchCustom'
+import SelectSearch, { Option } from '@/components/SelectSearch'
 
-const options = [
-  { name: 'Swedish', value: 'sv' },
-  { name: 'English', value: 'en' },
+const options: Option[] = [
+  {
+    label: 'I am red',
+    value: 'i-am-red',
+  },
+  {
+    label: 'I fallback to purple',
+    value: 'i-am-purple',
+  },
 ]
 
 export default function Home() {
@@ -39,6 +45,10 @@ export default function Home() {
   const handleDestChain = (chain: DestinationChain) => {
     setDestChain(chain)
     onClose()
+  }
+
+  const handleSelectContract = (option: Option) => {
+    console.log(option)
   }
 
   return (
@@ -116,9 +126,7 @@ export default function Home() {
               <Text fontSize={'xs'} mb={2}>
                 I want to transfer from {chain.name} collection
               </Text>
-              <div>
-                <SelectSearchCustom options={options} />
-              </div>
+              <SelectSearch options={options} onChange={handleSelectContract} />
             </Box>
             <Box
               borderRadius={'md'}
@@ -129,17 +137,9 @@ export default function Home() {
               w={'full'}
             >
               <Text fontSize={'xs'} mb={2}>
-                I want to transfer this NFT
+                I want to transfer my NFT
               </Text>
-              <Select
-                placeholder="Select option"
-                border={'none'}
-                colorScheme="stargaze"
-              >
-                <option value="option1">Option 1</option>
-                <option value="option2">Option 2</option>
-                <option value="option3">Option 3</option>
-              </Select>
+              <SelectSearch options={options} onChange={handleSelectContract} />
             </Box>
             <Box
               borderRadius={'md'}
