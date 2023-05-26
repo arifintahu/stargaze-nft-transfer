@@ -20,13 +20,13 @@ class ICS721 {
     return this.client
   }
 
-  public async getContractInfo(address: string) {
+  public async getContractInfo(contractAddress: string) {
     const query = {
       contract_info: {},
     }
 
     const client = await this.setClient()
-    return client.wasm.queryContractSmart(address, query)
+    return client.wasm.queryContractSmart(contractAddress, query)
   }
 }
 

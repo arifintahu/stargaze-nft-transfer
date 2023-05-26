@@ -33,6 +33,7 @@
     "react-dom": "18.2.0",
     "react-icons": "^4.8.0",
     "react-redux": "^8.0.5",
+    "react-select-search": "^4.1.6",
     "typescript": "5.0.4"
   },
   "devDependencies": {

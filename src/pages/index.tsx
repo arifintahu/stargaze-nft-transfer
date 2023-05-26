@@ -21,6 +21,12 @@ import { useState, useRef, useEffect } from 'react'
 import { getChain, getDestinationChains } from '@/config'
 import { DestinationChain } from '@/config/types'
 import { ChevronDownIcon } from '@chakra-ui/icons'
+import SelectSearchCustom from '@/components/SelectSearchCustom'
+
+const options = [
+  { name: 'Swedish', value: 'sv' },
+  { name: 'English', value: 'en' },
+]
 
 export default function Home() {
   const chain = getChain()
@@ -108,17 +114,11 @@ export default function Home() {
               w={'full'}
             >
               <Text fontSize={'xs'} mb={2}>
-                I want to transfer from Stargaze collection
+                I want to transfer from {chain.name} collection
               </Text>
-              <Select
-                placeholder="Select option"
-                border={'none'}
-                colorScheme="stargaze"
-              >
-                <option value="option1">Option 1</option>
-                <option value="option2">Option 2</option>
-                <option value="option3">Option 3</option>
-              </Select>
+              <div>
+                <SelectSearchCustom options={options} />
+              </div>
             </Box>
             <Box
               borderRadius={'md'}
