@@ -5,7 +5,6 @@ import {
   Text,
   Heading,
   SimpleGrid,
-  Select,
   Input,
   Button,
   Modal,
@@ -22,6 +21,7 @@ import { getChain, getDestinationChains } from '@/config'
 import { DestinationChain } from '@/config/types'
 import { ChevronDownIcon } from '@chakra-ui/icons'
 import SelectSearch, { Option } from '@/components/SelectSearch'
+import cw721 from '@/utils/client/rest/contract/cw721'
 
 const options: Option[] = [
   {
@@ -41,10 +41,29 @@ export default function Home() {
   const finalRef = useRef(null)
 
   const [destChain, setDestChain] = useState(destChains[0])
+  const [contracts, setContracts] = useState<Option[]>([])
 
   const handleDestChain = (chain: DestinationChain) => {
     setDestChain(chain)
     onClose()
+  }
+
+  useEffect(() => {
+    if (!contracts.length) {
+      getAllContracts()
+    }
+  }, [contracts])
+
+  const getAllContracts = async () => {
+    const allContracts = await cw721.getAllContracts()
+    const optionContracts: Option[] = allContracts.map((item) => {
+      return {
+        label: item,
+        value: item,
+      }
+    })
+
+    setContracts(optionContracts)
   }
 
   const handleSelectContract = (option: Option) => {
@@ -124,9 +143,12 @@ export default function Home() {
               w={'full'}
             >
               <Text fontSize={'xs'} mb={2}>
-                I want to transfer from {chain.name} collection
+                I want to transfer from {chain.name} NFT contract
               </Text>
-              <SelectSearch options={options} onChange={handleSelectContract} />
+              <SelectSearch
+                options={contracts}
+                onChange={handleSelectContract}
+              />
             </Box>
             <Box
               borderRadius={'md'}

@@ -10,7 +10,9 @@
       "denom": "STARS",
       "minimalDenom": "ustars",
       "decimals": 6
-    }
+    },
+    "contractAddress": "stars1ve46fjrhcrum94c7d8yc2wsdz8cpuw73503e8qn9r44spr6dw0lsvmvtqh",
+    "cw721BaseCodeId": 1660
   },
   "destination_chains": [
     {

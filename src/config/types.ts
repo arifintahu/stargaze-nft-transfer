@@ -12,6 +12,8 @@ export interface Chain {
   readonly rest: string
   readonly gasPrice: string
   readonly coin: Coin
+  readonly contractAddress: string
+  readonly cw721BaseCodeId: number
 }
 
 export interface NftTransfer {
