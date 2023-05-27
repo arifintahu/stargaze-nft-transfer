@@ -1,5 +1,4 @@
 import request from '@/utils/request'
-import { getChain } from '@/config'
 import { Pagination, QueryPagination } from '../../types'
 
 export interface ContractsByCodeIdResponse {
@@ -22,5 +21,18 @@ export async function queryContractsByCodeId(
     path,
     query
   )
+  return response
+}
+
+export interface SmartContractStateResponse {
+  data: any
+}
+export async function querySmartContractState(
+  restUrl: string,
+  contractAddress: string,
+  queryData: string
+): Promise<SmartContractStateResponse> {
+  const path = `/cosmwasm/wasm/v1/contract/${contractAddress}/smart/${queryData}`
+  const response: SmartContractStateResponse = await request.get(restUrl, path)
   return response
 }

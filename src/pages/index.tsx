@@ -23,17 +23,6 @@ import { ChevronDownIcon } from '@chakra-ui/icons'
 import SelectSearch, { Option } from '@/components/SelectSearch'
 import cw721 from '@/utils/client/rest/contract/cw721'
 
-const options: Option[] = [
-  {
-    label: 'I am red',
-    value: 'i-am-red',
-  },
-  {
-    label: 'I fallback to purple',
-    value: 'i-am-purple',
-  },
-]
-
 export default function Home() {
   const chain = getChain()
   const destChains = getDestinationChains()
@@ -42,6 +31,11 @@ export default function Home() {
 
   const [destChain, setDestChain] = useState(destChains[0])
   const [contracts, setContracts] = useState<Option[]>([])
+  const [tokens, setTokens] = useState<Option[]>([])
+  const [token, setToken] = useState('')
+
+  const [isLoadingContracts, setIsLoadingContracts] = useState(false)
+  const [isLoadingTokens, setIsLoadingTokens] = useState(false)
 
   const handleDestChain = (chain: DestinationChain) => {
     setDestChain(chain)
@@ -55,6 +49,7 @@ export default function Home() {
   }, [contracts])
 
   const getAllContracts = async () => {
+    setIsLoadingContracts(true)
     const allContracts = await cw721.getAllContracts()
     const optionContracts: Option[] = allContracts.map((item) => {
       return {
@@ -62,12 +57,29 @@ export default function Home() {
         value: item,
       }
     })
-
+    setIsLoadingContracts(false)
     setContracts(optionContracts)
   }
 
-  const handleSelectContract = (option: Option) => {
-    console.log(option)
+  const handleSelectContract = async (option: Option) => {
+    setIsLoadingTokens(true)
+    const result = await cw721.getTokensByOwner(
+      option.value,
+      'stars1ve46fjrhcrum94c7d8yc2wsdz8cpuw73503e8qn9r44spr6dw0lsvmvtqh'
+    )
+    const optionTokens: Option[] = result.tokens.map((item) => {
+      return {
+        label: item,
+        value: item,
+      }
+    })
+    setIsLoadingTokens(false)
+    setTokens(optionTokens)
+    setToken('')
+  }
+
+  const handleSelectToken = (option: Option) => {
+    setToken(option.value)
   }
 
   return (
@@ -143,11 +155,13 @@ export default function Home() {
               w={'full'}
             >
               <Text fontSize={'xs'} mb={2}>
-                I want to transfer from {chain.name} NFT contract
+                I want to transfer from {chain.name} contract
               </Text>
               <SelectSearch
                 options={contracts}
                 onChange={handleSelectContract}
+                isLoading={isLoadingContracts}
+                placeholder="Select contract address"
               />
             </Box>
             <Box
@@ -161,7 +175,12 @@ export default function Home() {
               <Text fontSize={'xs'} mb={2}>
                 I want to transfer my NFT
               </Text>
-              <SelectSearch options={options} onChange={handleSelectContract} />
+              <SelectSearch
+                options={tokens}
+                onChange={handleSelectToken}
+                isLoading={isLoadingTokens}
+                placeholder="Select NFT"
+              />
             </Box>
             <Box
               borderRadius={'md'}

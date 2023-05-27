@@ -10,14 +10,22 @@ export interface Option {
 interface SelectSearchProps {
   options: Option[]
   onChange: any
+  isLoading?: boolean
+  placeholder?: string
 }
 
-export default function SelectSearch({ options, onChange }: SelectSearchProps) {
+export default function SelectSearch({
+  options,
+  onChange,
+  isLoading = false,
+  placeholder = 'Select option',
+}: SelectSearchProps) {
   return (
     <Box>
       <Select
+        isLoading={isLoading}
         useBasicStyles
-        placeholder="Select contract address"
+        placeholder={placeholder}
         chakraStyles={{
           menuList: (provided) => ({
             ...provided,

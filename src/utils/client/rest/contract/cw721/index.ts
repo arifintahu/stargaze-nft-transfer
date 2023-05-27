@@ -1,6 +1,13 @@
 import { getChain } from '@/config'
 import { Chain } from '@/config/types'
-import { queryContractsByCodeId } from '@/utils/client/rest/cosmwasm/wasm'
+import {
+  queryContractsByCodeId,
+  querySmartContractState,
+} from '@/utils/client/rest/cosmwasm/wasm'
+
+interface Tokens {
+  tokens: string[]
+}
 
 class CW721 {
   private readonly chain: Chain
@@ -36,6 +43,25 @@ class CW721 {
       contracts.push(...response.contracts)
     }
     return contracts
+  }
+
+  public async getTokensByOwner(
+    contractAddress: string,
+    owner: string
+  ): Promise<Tokens> {
+    const query = {
+      tokens: {
+        owner: owner,
+      },
+    }
+    const queryData = btoa(JSON.stringify(query))
+    const response: { data: Tokens } = await querySmartContractState(
+      this.chain.rest,
+      contractAddress,
+      queryData
+    )
+
+    return response.data
   }
 }
 
