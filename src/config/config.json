@@ -6,6 +6,9 @@
     "rpc": "https://rpc.elgafar-1.stargaze-apis.com:443",
     "rest": "https://rest.elgafar-1.stargaze-apis.com",
     "gasPrice": "0.1ustars",
+    "address": {
+      "prefix": "stars"
+    },
     "coin": {
       "denom": "STARS",
       "minimalDenom": "ustars",
@@ -19,6 +22,9 @@
       "id": "gon-irishub-1",
       "name": "IRISnet Testnet",
       "logo": "/assets/irisnet.svg",
+      "address": {
+        "prefix": "iaa"
+      },
       "nftTransfer": {
         "port": "nft-transfer",
         "channel": "channel-207"
@@ -28,6 +34,9 @@
       "id": "gon-flixnet-1",
       "name": "Omniflix Testnet",
       "logo": "/assets/omniflix.svg",
+      "address": {
+        "prefix": "omniflix"
+      },
       "nftTransfer": {
         "port": "nft-transfer",
         "channel": "channel-209"

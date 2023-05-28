@@ -1,3 +1,4 @@
+import { bech32 } from 'bech32'
 import { Coin } from '@/config/types'
 import { Balance } from '@/utils/client/rest/cosmos/bank'
 
@@ -17,4 +18,9 @@ export const showBalance = (balances: Balance[], coin: Coin) => {
   const convertToDenom =
     Math.floor((balance.amount * 100) / 10 ** coin.decimals) / 100
   return `${convertToDenom.toLocaleString()} ${coin.denom}`
+}
+
+export const convertAddress = (address: string, toPrefix: string): string => {
+  const decoded = bech32.decode(address)
+  return bech32.encode(toPrefix, decoded.words)
 }

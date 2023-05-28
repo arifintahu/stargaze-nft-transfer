@@ -4,6 +4,10 @@ export interface Coin {
   readonly decimals: number
 }
 
+export interface Address {
+  readonly prefix: string
+}
+
 export interface Chain {
   readonly id: string
   readonly name: string
@@ -11,6 +15,7 @@ export interface Chain {
   readonly rpc: string
   readonly rest: string
   readonly gasPrice: string
+  readonly address: Address
   readonly coin: Coin
   readonly contractAddress: string
   readonly cw721BaseCodeId: number
@@ -25,5 +30,6 @@ export interface DestinationChain {
   readonly id: string
   readonly name: string
   readonly logo: string
+  readonly address: Address
   readonly nftTransfer: NftTransfer
 }

@@ -1,5 +1,5 @@
 import { Box } from '@chakra-ui/react'
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Select } from 'chakra-react-select'
 
 export interface Option {
@@ -10,6 +10,7 @@ export interface Option {
 interface SelectSearchProps {
   options: Option[]
   onChange: any
+  value: any
   isLoading?: boolean
   placeholder?: string
 }
@@ -17,6 +18,7 @@ interface SelectSearchProps {
 export default function SelectSearch({
   options,
   onChange,
+  value,
   isLoading = false,
   placeholder = 'Select option',
 }: SelectSearchProps) {
@@ -44,6 +46,7 @@ export default function SelectSearch({
         }}
         options={options}
         onChange={onChange}
+        value={value}
       />
     </Box>
   )

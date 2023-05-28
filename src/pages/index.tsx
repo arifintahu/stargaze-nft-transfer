@@ -16,23 +16,29 @@ import {
   useDisclosure,
 } from '@chakra-ui/react'
 import Head from 'next/head'
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, ChangeEvent, MouseEvent } from 'react'
+import { useSelector } from 'react-redux'
 import { getChain, getDestinationChains } from '@/config'
 import { DestinationChain } from '@/config/types'
 import { ChevronDownIcon } from '@chakra-ui/icons'
 import SelectSearch, { Option } from '@/components/SelectSearch'
+import { selectAddress } from '@/store/accountSlice'
 import cw721 from '@/utils/client/rest/contract/cw721'
+import { convertAddress } from '@/utils/helpers'
 
 export default function Home() {
   const chain = getChain()
   const destChains = getDestinationChains()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const finalRef = useRef(null)
+  const address = useSelector(selectAddress)
 
   const [destChain, setDestChain] = useState(destChains[0])
   const [contracts, setContracts] = useState<Option[]>([])
+  const [contract, setContract] = useState<Option | null>()
   const [tokens, setTokens] = useState<Option[]>([])
-  const [token, setToken] = useState('')
+  const [token, setToken] = useState<Option | null>()
+  const [destAddress, setDestAddress] = useState('')
 
   const [isLoadingContracts, setIsLoadingContracts] = useState(false)
   const [isLoadingTokens, setIsLoadingTokens] = useState(false)
@@ -61,25 +67,43 @@ export default function Home() {
     setContracts(optionContracts)
   }
 
+  useEffect(() => {
+    if (destChain && address && token) {
+      const converted = convertAddress(address, destChain.address.prefix)
+      setDestAddress(converted)
+    }
+  }, [destChain, address, token])
+
   const handleSelectContract = async (option: Option) => {
-    setIsLoadingTokens(true)
-    const result = await cw721.getTokensByOwner(
-      option.value,
-      'stars1ve46fjrhcrum94c7d8yc2wsdz8cpuw73503e8qn9r44spr6dw0lsvmvtqh'
-    )
-    const optionTokens: Option[] = result.tokens.map((item) => {
-      return {
-        label: item,
-        value: item,
-      }
-    })
-    setIsLoadingTokens(false)
-    setTokens(optionTokens)
-    setToken('')
+    if (address) {
+      setIsLoadingTokens(true)
+      setContract(option)
+      const result = await cw721.getTokensByOwner(option.value, address)
+      const optionTokens: Option[] = result.tokens.map((item) => {
+        return {
+          label: item,
+          value: item,
+        }
+      })
+      setIsLoadingTokens(false)
+      setTokens(optionTokens)
+      setToken(null)
+    } else {
+      alert('Please install keplr extension')
+    }
   }
 
   const handleSelectToken = (option: Option) => {
-    setToken(option.value)
+    setToken(option)
+  }
+
+  const handleDestAddress = (e: ChangeEvent<HTMLInputElement>) => {
+    setDestAddress(e.target.value)
+  }
+
+  const handleTransfer = (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault()
+    console.log(contract, token, destAddress)
   }
 
   return (
@@ -159,6 +183,7 @@ export default function Home() {
               </Text>
               <SelectSearch
                 options={contracts}
+                value={contract}
                 onChange={handleSelectContract}
                 isLoading={isLoadingContracts}
                 placeholder="Select contract address"
@@ -177,6 +202,7 @@ export default function Home() {
               </Text>
               <SelectSearch
                 options={tokens}
+                value={token}
                 onChange={handleSelectToken}
                 isLoading={isLoadingTokens}
                 placeholder="Select NFT"
@@ -193,9 +219,19 @@ export default function Home() {
               <Text fontSize={'xs'} mb={2}>
                 And receive on IRIS to this destination address
               </Text>
-              <Input placeholder="Destination address" border={'none'} />
+              <Input
+                onChange={handleDestAddress}
+                value={destAddress}
+                placeholder="Destination address"
+                border={'none'}
+              />
             </Box>
-            <Button colorScheme="stargaze" px={16} w={'full'}>
+            <Button
+              onClick={handleTransfer}
+              colorScheme="stargaze"
+              px={16}
+              w={'full'}
+            >
               Transfer
             </Button>
           </Box>
