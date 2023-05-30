@@ -14,6 +14,7 @@ import {
   ModalCloseButton,
   ModalBody,
   useDisclosure,
+  useToast,
 } from '@chakra-ui/react'
 import Head from 'next/head'
 import { useState, useRef, useEffect, ChangeEvent, MouseEvent } from 'react'
@@ -33,6 +34,7 @@ export default function Home() {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const finalRef = useRef(null)
   const address = useSelector(selectAddress)
+  const toast = useToast()
 
   const [destChain, setDestChain] = useState(destChains[0])
   const [contracts, setContracts] = useState<Option[]>([])
@@ -43,6 +45,7 @@ export default function Home() {
 
   const [isLoadingContracts, setIsLoadingContracts] = useState(false)
   const [isLoadingTokens, setIsLoadingTokens] = useState(false)
+  const [isLoadingTransfer, setIsLoadingTransfer] = useState(false)
 
   const handleDestChain = (chain: DestinationChain) => {
     setDestChain(chain)
@@ -90,7 +93,11 @@ export default function Home() {
       setTokens(optionTokens)
       setToken(null)
     } else {
-      alert('Please install keplr extension')
+      toast({
+        title: 'Please install keplr extension',
+        status: 'warning',
+        isClosable: true,
+      })
     }
   }
 
@@ -104,8 +111,8 @@ export default function Home() {
 
   const handleTransfer = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
-    console.log(contract, token, destAddress)
-    if (window.keplr) {
+    if (address && window.keplr) {
+      setIsLoadingTransfer(true)
       await window.keplr.enable(chain.id)
       const offlineSigner = window.keplr.getOfflineSigner(chain.id)
       const accounts = await offlineSigner.getAccounts()
@@ -114,21 +121,51 @@ export default function Home() {
           chain.rpc,
           offlineSigner
         )
-        const result = await client.wasmSendNFT(
-          accounts[0].address,
-          chain.contractAddress,
-          contract.value,
-          token.value,
-          destAddress,
-          destChain.nftTransfer.channel,
-          chain.gasPrice
-        )
-        console.log(result)
+        const result = await client
+          .wasmSendNFT(
+            accounts[0].address,
+            chain.contractAddress,
+            contract.value,
+            token.value,
+            destAddress,
+            destChain.nftTransfer.channel,
+            chain.gasPrice
+          )
+          .catch((err: Error) => {
+            toast({
+              title: 'Transfer error',
+              description: err.message,
+              status: 'error',
+              isClosable: true,
+              position: 'top',
+            })
+          })
+        if (result) {
+          toast({
+            title: 'Success',
+            description: `Tx Hash ${result.transactionHash}`,
+            status: 'success',
+            isClosable: true,
+            position: 'top',
+            duration: 20000,
+          })
+        }
+        setIsLoadingTransfer(false)
       } else {
-        alert('Invalid Form')
+        toast({
+          title: 'Invalid form',
+          status: 'warning',
+          isClosable: true,
+          position: 'top',
+        })
       }
     } else {
-      alert('Please install keplr extension')
+      toast({
+        title: 'Please connect to wallet',
+        status: 'warning',
+        isClosable: true,
+        position: 'top',
+      })
     }
   }
 
@@ -282,6 +319,7 @@ export default function Home() {
               colorScheme="stargaze"
               px={16}
               w={'full'}
+              isLoading={isLoadingTransfer}
             >
               Transfer
             </Button>

@@ -4,12 +4,26 @@ import {
   SigningCosmWasmClient,
   SigningCosmWasmClientOptions,
 } from '@cosmjs/cosmwasm-stargate'
-import { OfflineSigner, Registry } from '@cosmjs/proto-signing'
-import { GasPrice, calculateFee } from '@cosmjs/stargate'
+import { OfflineSigner, Registry, GeneratedType } from '@cosmjs/proto-signing'
+import {
+  GasPrice,
+  calculateFee,
+  defaultRegistryTypes as defaultStargateTypes,
+} from '@cosmjs/stargate'
 import { getNanoTimestamp } from '@/utils/helpers'
+import { wasmTypes } from '@/utils/client/rpc/types/wasm/messages'
 
 const replaceHTTPtoWebsocket = (url: string): string => {
   return url.replace('http', 'ws')
+}
+
+export const customRegistryTypes: ReadonlyArray<[string, GeneratedType]> = [
+  ...defaultStargateTypes,
+  ...wasmTypes,
+]
+
+function createDefaultRegistry(): Registry {
+  return new Registry(customRegistryTypes)
 }
 
 export async function connectWebsocketClient(
@@ -29,7 +43,7 @@ export class SigningClient extends SigningCosmWasmClient {
   ): Promise<SigningClient> {
     const tmClient = await connectWebsocketClient(endpoint)
     return new SigningClient(tmClient, signer, {
-      registry: new Registry(),
+      registry: createDefaultRegistry(),
       ...options,
     })
   }
@@ -50,7 +64,7 @@ export class SigningClient extends SigningCosmWasmClient {
     receiverAddress: string,
     channelId: string,
     gasPrice: string,
-    gasLimit: number = 200_000
+    gasLimit: number = 500_000
   ): Promise<ExecuteResult> {
     const executeFee = calculateFee(gasLimit, GasPrice.fromString(gasPrice))
     const msgReceiver = {

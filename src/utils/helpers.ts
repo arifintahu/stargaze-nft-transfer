@@ -25,8 +25,8 @@ export const convertAddress = (address: string, toPrefix: string): string => {
   return bech32.encode(toPrefix, decoded.words)
 }
 
-export const getNanoTimestamp = (minutes: number): number => {
+export const getNanoTimestamp = (minutes: number): string => {
   const timestamp = new Date().getTime() + minutes * 60
   const nanoTimestamp = timestamp * 10 ** 6
-  return nanoTimestamp
+  return nanoTimestamp.toString()
 }
