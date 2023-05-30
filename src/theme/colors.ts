@@ -12,6 +12,7 @@ export const colors = {
     900: '#5a1d33',
   },
   satellite: {
+    50: '#333F4B',
     100: '#1C2937',
     500: '#0E1721',
   },

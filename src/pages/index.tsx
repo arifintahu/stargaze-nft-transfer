@@ -25,6 +25,7 @@ import SelectSearch, { Option } from '@/components/SelectSearch'
 import { selectAddress } from '@/store/accountSlice'
 import cw721 from '@/utils/client/rest/contract/cw721'
 import { convertAddress } from '@/utils/helpers'
+import { SigningClient } from '@/utils/client/rpc/signingclient'
 
 export default function Home() {
   const chain = getChain()
@@ -101,9 +102,34 @@ export default function Home() {
     setDestAddress(e.target.value)
   }
 
-  const handleTransfer = (e: MouseEvent<HTMLButtonElement>) => {
+  const handleTransfer = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
     console.log(contract, token, destAddress)
+    if (window.keplr) {
+      await window.keplr.enable(chain.id)
+      const offlineSigner = window.keplr.getOfflineSigner(chain.id)
+      const accounts = await offlineSigner.getAccounts()
+      if (contract?.value && token?.value && destAddress) {
+        const client = await SigningClient.connectWithSigner(
+          chain.rpc,
+          offlineSigner
+        )
+        const result = await client.wasmSendNFT(
+          accounts[0].address,
+          chain.contractAddress,
+          contract.value,
+          token.value,
+          destAddress,
+          destChain.nftTransfer.channel,
+          chain.gasPrice
+        )
+        console.log(result)
+      } else {
+        alert('Invalid Form')
+      }
+    } else {
+      alert('Please install keplr extension')
+    }
   }
 
   return (
@@ -217,15 +243,40 @@ export default function Home() {
               w={'full'}
             >
               <Text fontSize={'xs'} mb={2}>
-                And receive on IRIS to this destination address
+                And receive on {destChain.name} to this receiver address
               </Text>
               <Input
                 onChange={handleDestAddress}
                 value={destAddress}
-                placeholder="Destination address"
+                placeholder="Receiver address"
                 border={'none'}
               />
             </Box>
+            <Box
+              borderRadius={'md'}
+              bg={'satellite.50'}
+              px={6}
+              py={3}
+              w={'full'}
+            >
+              <Flex justifyContent={'space-between'} fontSize={'sm'} mb={1}>
+                <Text>Gas price</Text>
+                <Text>{chain.gasPrice}</Text>
+              </Flex>
+              <Flex justifyContent={'space-between'} fontSize={'sm'} mb={1}>
+                <Text>IBC port</Text>
+                <Text>{destChain.nftTransfer.port}</Text>
+              </Flex>
+              <Flex justifyContent={'space-between'} fontSize={'sm'} mb={1}>
+                <Text>IBC channel</Text>
+                <Text>{destChain.nftTransfer.channel}</Text>
+              </Flex>
+              <Flex justifyContent={'space-between'} fontSize={'sm'} mb={1}>
+                <Text>Destination chain ID</Text>
+                <Text>{destChain.id}</Text>
+              </Flex>
+            </Box>
+
             <Button
               onClick={handleTransfer}
               colorScheme="stargaze"
