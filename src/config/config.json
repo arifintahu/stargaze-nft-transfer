@@ -26,7 +26,6 @@
         "prefix": "iaa"
       },
       "nftTransfer": {
-        "port": "nft-transfer",
         "channel": "channel-207"
       }
     },
@@ -38,7 +37,6 @@
         "prefix": "omniflix"
       },
       "nftTransfer": {
-        "port": "nft-transfer",
         "channel": "channel-209"
       }
     }

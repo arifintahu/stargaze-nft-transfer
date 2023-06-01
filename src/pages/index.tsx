@@ -301,10 +301,6 @@ export default function Home() {
                 <Text>{chain.gasPrice}</Text>
               </Flex>
               <Flex justifyContent={'space-between'} fontSize={'sm'} mb={1}>
-                <Text>IBC port</Text>
-                <Text>{destChain.nftTransfer.port}</Text>
-              </Flex>
-              <Flex justifyContent={'space-between'} fontSize={'sm'} mb={1}>
                 <Text>IBC channel</Text>
                 <Text>{destChain.nftTransfer.channel}</Text>
               </Flex>

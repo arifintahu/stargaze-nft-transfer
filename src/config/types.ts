@@ -22,7 +22,6 @@ export interface Chain {
 }
 
 export interface NftTransfer {
-  readonly port: string
   readonly channel: string
 }
 
