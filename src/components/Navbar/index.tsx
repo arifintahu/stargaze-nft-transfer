@@ -37,8 +37,8 @@ const menuList = [
   },
   {
     id: 2,
-    route: '/mycollections',
-    name: 'My Collections',
+    route: '/collections',
+    name: 'Collections',
   },
 ]
 

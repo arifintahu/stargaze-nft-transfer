@@ -2,10 +2,14 @@ import { bech32 } from 'bech32'
 import { Coin } from '@/config/types'
 import { Balance } from '@/utils/client/rest/cosmos/bank'
 
-export const trimAddress = (address: string): string => {
+export const trimAddress = (
+  address: string,
+  start: number = 2,
+  end: number = 5
+): string => {
   const indexPrefix = address.indexOf('1')
-  const first = address.slice(0, indexPrefix + 2)
-  const last = address.slice(address.length - 5, address.length)
+  const first = address.slice(0, indexPrefix + start)
+  const last = address.slice(address.length - end, address.length)
   return first + '...' + last
 }
 
