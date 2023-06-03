@@ -35,7 +35,7 @@ interface Collection {
   type: string
 }
 
-const PER_PAGE = 20
+const PER_PAGE = 15
 
 export default function Collections() {
   const address = useSelector(selectAddress)
@@ -68,19 +68,19 @@ export default function Collections() {
   }, [contracts])
 
   useEffect(() => {
-    if (!collections.length) {
-      contracts.slice(0, PER_PAGE).map((item) => {
-        setCollections((prevValue) => [
-          ...prevValue,
-          {
-            title: item,
-            contract: item,
-            type: 'IBC',
-          },
-        ])
+    if (contracts.length) {
+      const start = (page - 1) * PER_PAGE
+      const end = start + PER_PAGE
+      const items = contracts.slice(start, end).map((item) => {
+        return {
+          title: item,
+          contract: item,
+          type: 'IBC',
+        }
       })
+      setCollections(items)
     }
-  }, [contracts, collections])
+  }, [contracts, page])
 
   return (
     <>
@@ -163,8 +163,8 @@ export default function Collections() {
                   <Tooltip label="First Page">
                     <IconButton
                       colorScheme="stargaze"
-                      onClick={console.log}
-                      isDisabled={true}
+                      onClick={() => setPage(1)}
+                      isDisabled={page === 1}
                       icon={<ArrowLeftIcon h={3} w={3} />}
                       mr={4}
                       aria-label="First Page"
@@ -173,8 +173,8 @@ export default function Collections() {
                   <Tooltip label="Previous Page">
                     <IconButton
                       colorScheme="stargaze"
-                      onClick={console.log}
-                      isDisabled={true}
+                      onClick={() => setPage(page - 1)}
+                      isDisabled={page === 1}
                       icon={<ChevronLeftIcon h={6} w={6} />}
                       aria-label="Previous Page"
                     />
@@ -198,8 +198,8 @@ export default function Collections() {
                   <Tooltip label="Next Page">
                     <IconButton
                       colorScheme="stargaze"
-                      onClick={console.log}
-                      isDisabled={true}
+                      onClick={() => setPage(page + 1)}
+                      isDisabled={page === totalPages}
                       icon={<ChevronRightIcon h={6} w={6} />}
                       aria-label="Next Page"
                     />
@@ -207,8 +207,8 @@ export default function Collections() {
                   <Tooltip label="Last Page">
                     <IconButton
                       colorScheme="stargaze"
-                      onClick={console.log}
-                      isDisabled={true}
+                      onClick={() => setPage(totalPages)}
+                      isDisabled={page === totalPages}
                       icon={<ArrowRightIcon h={3} w={3} />}
                       ml={4}
                       aria-label="Last Page"
