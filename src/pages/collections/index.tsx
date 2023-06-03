@@ -21,13 +21,21 @@ import {
 } from '@chakra-ui/react'
 import cw721 from '@/utils/client/rest/contract/cw721'
 import { trimAddress } from '@/utils/helpers'
-import { CopyIcon } from '@chakra-ui/icons'
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  CopyIcon,
+} from '@chakra-ui/icons'
 
 interface Collection {
   title: string
   contract: string
   type: string
 }
+
+const PER_PAGE = 20
 
 export default function Collections() {
   const address = useSelector(selectAddress)
@@ -36,6 +44,9 @@ export default function Collections() {
   const [contracts, setContracts] = useState<string[]>([])
   const [isLoadingContracts, setIsLoadingContracts] = useState(false)
   const [collections, setCollections] = useState<Collection[]>([])
+
+  const [page, setPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
 
   const getAllContracts = async () => {
     setIsLoadingContracts(true)
@@ -51,12 +62,14 @@ export default function Collections() {
   useEffect(() => {
     if (!contracts.length) {
       getAllContracts()
+    } else {
+      setTotalPages(Math.ceil(contracts.length / PER_PAGE))
     }
   }, [contracts])
 
   useEffect(() => {
     if (!collections.length) {
-      contracts.slice(0, 10).map((item) => {
+      contracts.slice(0, PER_PAGE).map((item) => {
         setCollections((prevValue) => [
           ...prevValue,
           {
@@ -139,12 +152,70 @@ export default function Collections() {
                         }
                       </Td>
                       <Td borderBottomColor={'gray.500'}>
-                        <Badge>{item.type}</Badge>
+                        <Badge colorScheme="stargaze">{item.type}</Badge>
                       </Td>
                     </Tr>
                   ))}
                 </Tbody>
               </Table>
+              <Flex justifyContent="space-between" m={4} alignItems="center">
+                <Flex>
+                  <Tooltip label="First Page">
+                    <IconButton
+                      colorScheme="stargaze"
+                      onClick={console.log}
+                      isDisabled={true}
+                      icon={<ArrowLeftIcon h={3} w={3} />}
+                      mr={4}
+                      aria-label="First Page"
+                    />
+                  </Tooltip>
+                  <Tooltip label="Previous Page">
+                    <IconButton
+                      colorScheme="stargaze"
+                      onClick={console.log}
+                      isDisabled={true}
+                      icon={<ChevronLeftIcon h={6} w={6} />}
+                      aria-label="Previous Page"
+                    />
+                  </Tooltip>
+                </Flex>
+
+                <Flex alignItems="center">
+                  <Text flexShrink="0" mr={8}>
+                    Page{' '}
+                    <Text fontWeight="bold" as="span">
+                      {page}
+                    </Text>{' '}
+                    of{' '}
+                    <Text fontWeight="bold" as="span">
+                      {totalPages}
+                    </Text>
+                  </Text>
+                </Flex>
+
+                <Flex>
+                  <Tooltip label="Next Page">
+                    <IconButton
+                      colorScheme="stargaze"
+                      onClick={console.log}
+                      isDisabled={true}
+                      icon={<ChevronRightIcon h={6} w={6} />}
+                      aria-label="Next Page"
+                    />
+                  </Tooltip>
+                  <Tooltip label="Last Page">
+                    <IconButton
+                      colorScheme="stargaze"
+                      onClick={console.log}
+                      isDisabled={true}
+                      icon={<ArrowRightIcon h={3} w={3} />}
+                      ml={4}
+                      aria-label="Last Page"
+                    />
+                  </Tooltip>
+                </Flex>
+              </Flex>
             </TableContainer>
           </Box>
         </Flex>
