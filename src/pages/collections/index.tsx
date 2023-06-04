@@ -20,7 +20,7 @@ import {
   useToast,
 } from '@chakra-ui/react'
 import cw721 from '@/utils/client/rest/contract/cw721'
-import { trimAddress } from '@/utils/helpers'
+import { trimAddress, getCollectionName, isIBC } from '@/utils/helpers'
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
@@ -73,14 +73,39 @@ export default function Collections() {
       const end = start + PER_PAGE
       const items = contracts.slice(start, end).map((item) => {
         return {
-          title: item,
+          title: '',
           contract: item,
-          type: 'IBC',
+          type: '',
         }
       })
       setCollections(items)
     }
   }, [contracts, page])
+
+  useEffect(() => {
+    if (collections.length && !collections[0].title) {
+      updateCollections()
+    }
+  }, [collections])
+
+  const updateCollections = async () => {
+    const promiseInfos = collections.map((item) =>
+      cw721.getContractInfo(item.contract)
+    )
+    const infos = await Promise.all(promiseInfos)
+    const items = collections.map((item) => {
+      const info = infos.find((info) => info.contract === item.contract)
+      if (info) {
+        return {
+          title: getCollectionName(info.name),
+          contract: item.contract,
+          type: isIBC(info.name) ? 'IBC' : 'Native',
+        }
+      }
+      return item
+    })
+    setCollections(items)
+  }
 
   return (
     <>
@@ -105,6 +130,7 @@ export default function Collections() {
                       borderTopWidth={1}
                       borderBottomColor={'gray.500'}
                       borderTopColor={'gray.500'}
+                      w={500}
                     >
                       Title
                     </Th>
@@ -129,7 +155,7 @@ export default function Collections() {
                 <Tbody>
                   {collections.map((item) => (
                     <Tr key={item.contract}>
-                      <Td borderBottomColor={'gray.500'} maxW={200}>
+                      <Td borderBottomColor={'gray.500'}>
                         {item.title.length > 55
                           ? item.title.slice(0, 52) + '...'
                           : item.title}
@@ -152,7 +178,11 @@ export default function Collections() {
                         }
                       </Td>
                       <Td borderBottomColor={'gray.500'}>
-                        <Badge colorScheme="stargaze">{item.type}</Badge>
+                        {item.type === 'Native' ? (
+                          <Badge colorScheme="stargaze">{item.type}</Badge>
+                        ) : (
+                          <Badge colorScheme="blue">{item.type}</Badge>
+                        )}
                       </Td>
                     </Tr>
                   ))}

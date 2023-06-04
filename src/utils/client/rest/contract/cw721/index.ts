@@ -9,6 +9,12 @@ interface Tokens {
   tokens: string[]
 }
 
+interface ContractInfo {
+  name: string
+  symbol: string
+  contract?: string
+}
+
 class CW721 {
   private readonly chain: Chain
   constructor() {
@@ -62,6 +68,23 @@ class CW721 {
     )
 
     return response.data
+  }
+
+  public async getContractInfo(contractAddress: string): Promise<ContractInfo> {
+    const query = {
+      contract_info: {},
+    }
+    const queryData = btoa(JSON.stringify(query))
+    const response: { data: ContractInfo } = await querySmartContractState(
+      this.chain.rest,
+      contractAddress,
+      queryData
+    )
+
+    return {
+      ...response.data,
+      contract: contractAddress,
+    }
   }
 }
 

@@ -1,6 +1,7 @@
 import { bech32 } from 'bech32'
 import { Coin } from '@/config/types'
 import { Balance } from '@/utils/client/rest/cosmos/bank'
+import { getChain } from '@/config'
 
 export const trimAddress = (
   address: string,
@@ -33,4 +34,22 @@ export const getNanoTimestamp = (minutes: number): string => {
   const timestamp = new Date().getTime() + minutes * 60
   const nanoTimestamp = timestamp * 10 ** 6
   return nanoTimestamp.toString()
+}
+
+export const getCollectionName = (name: string): string => {
+  const arr = name.split('/')
+  if (!arr.length) {
+    return ''
+  }
+
+  return arr[arr.length - 1]
+}
+
+export const isIBC = (name: string): boolean => {
+  const chain = getChain()
+  if (name.startsWith(`wasm.${chain.contractAddress}`)) {
+    return true
+  }
+
+  return false
 }
