@@ -99,6 +99,7 @@ export default function Navbar() {
         position={'sticky'}
         top={0}
         bg={'black'}
+        zIndex={99}
       >
         <Flex h={16} alignItems={'center'} justifyContent={'space-between'}>
           <Flex alignItems={'center'} gap={6}>

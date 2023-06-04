@@ -36,7 +36,7 @@ interface NFT {
   uri: string
 }
 
-const PER_PAGE = 15
+const PER_PAGE = 10
 
 export default function Collections() {
   const address = useSelector(selectAddress)
@@ -199,18 +199,20 @@ export default function Collections() {
                           {
                             <Flex alignItems={'center'}>
                               <Text w={60}>
-                                {item.uri.length > 30
+                                {item.uri && item.uri.length > 30
                                   ? item.uri.slice(0, 27) + '...'
                                   : item.uri}
                               </Text>
-                              <IconButton
-                                size={'sm'}
-                                variant={'ghost'}
-                                aria-label="Copy URI"
-                                _hover={{ background: 'gray.900' }}
-                                icon={<CopyIcon />}
-                                onClick={() => copyAddress(item.uri)}
-                              />
+                              {item.uri && (
+                                <IconButton
+                                  size={'sm'}
+                                  variant={'ghost'}
+                                  aria-label="Copy URI"
+                                  _hover={{ background: 'gray.900' }}
+                                  icon={<CopyIcon />}
+                                  onClick={() => copyAddress(item.uri)}
+                                />
+                              )}
                             </Flex>
                           }
                         </Td>
