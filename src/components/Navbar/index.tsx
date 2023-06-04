@@ -119,7 +119,13 @@ export default function Navbar() {
                   _focus={{ boxShadow: 'none' }}
                 >
                   {item.route === router.route ? (
-                    <Button colorScheme="stargaze">{item.name}</Button>
+                    <Button
+                      background={'stargaze.500'}
+                      color={'white'}
+                      _hover={{ background: 'stargaze.700' }}
+                    >
+                      {item.name}
+                    </Button>
                   ) : (
                     <Button
                       variant={'ghost'}
@@ -203,7 +209,13 @@ export default function Navbar() {
           <ModalHeader>Select Wallet</ModalHeader>
           <ModalCloseButton />
           <ModalBody px={6} py={8}>
-            <Button colorScheme="stargaze" width={'full'} onClick={handleKeplr}>
+            <Button
+              background={'stargaze.500'}
+              color={'white'}
+              _hover={{ background: 'stargaze.700' }}
+              width={'full'}
+              onClick={handleKeplr}
+            >
               Keplr Wallet
             </Button>
           </ModalBody>

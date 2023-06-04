@@ -224,7 +224,9 @@ export default function Collections() {
                   <Flex>
                     <Tooltip label="First Page">
                       <IconButton
-                        colorScheme="stargaze"
+                        background={'stargaze.500'}
+                        color={'white'}
+                        _hover={{ background: 'stargaze.700' }}
                         onClick={() => setPage(1)}
                         isDisabled={page === 1}
                         icon={<ArrowLeftIcon h={3} w={3} />}
@@ -234,7 +236,9 @@ export default function Collections() {
                     </Tooltip>
                     <Tooltip label="Previous Page">
                       <IconButton
-                        colorScheme="stargaze"
+                        background={'stargaze.500'}
+                        color={'white'}
+                        _hover={{ background: 'stargaze.700' }}
                         onClick={() => setPage(page - 1)}
                         isDisabled={page === 1}
                         icon={<ChevronLeftIcon h={6} w={6} />}
@@ -259,7 +263,9 @@ export default function Collections() {
                   <Flex>
                     <Tooltip label="Next Page">
                       <IconButton
-                        colorScheme="stargaze"
+                        background={'stargaze.500'}
+                        color={'white'}
+                        _hover={{ background: 'stargaze.700' }}
                         onClick={() => setPage(page + 1)}
                         isDisabled={page === totalPages}
                         icon={<ChevronRightIcon h={6} w={6} />}
@@ -268,7 +274,9 @@ export default function Collections() {
                     </Tooltip>
                     <Tooltip label="Last Page">
                       <IconButton
-                        colorScheme="stargaze"
+                        background={'stargaze.500'}
+                        color={'white'}
+                        _hover={{ background: 'stargaze.700' }}
                         onClick={() => setPage(totalPages)}
                         isDisabled={page === totalPages}
                         icon={<ArrowRightIcon h={3} w={3} />}

@@ -312,7 +312,9 @@ export default function Home() {
 
             <Button
               onClick={handleTransfer}
-              colorScheme="stargaze"
+              background={'stargaze.500'}
+              color={'white'}
+              _hover={{ background: 'stargaze.700' }}
               px={16}
               w={'full'}
               isLoading={isLoadingTransfer}
