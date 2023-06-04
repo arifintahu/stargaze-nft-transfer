@@ -181,7 +181,9 @@ export default function Navbar() {
                 </Flex>
               ) : (
                 <Button
-                  colorScheme="stargaze"
+                  background={'stargaze.500'}
+                  color={'white'}
+                  _hover={{ background: 'stargaze.700' }}
                   fontSize={'md'}
                   px={16}
                   minW={150}
