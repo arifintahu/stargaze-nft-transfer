@@ -86,6 +86,20 @@ class CW721 {
       contract: contractAddress,
     }
   }
+
+  public async getAllTokens(contractAddress: string): Promise<Tokens> {
+    const query = {
+      all_tokens: {},
+    }
+    const queryData = btoa(JSON.stringify(query))
+    const response: { data: Tokens } = await querySmartContractState(
+      this.chain.rest,
+      contractAddress,
+      queryData
+    )
+
+    return response.data
+  }
 }
 
 export default new CW721()

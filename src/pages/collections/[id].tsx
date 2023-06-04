@@ -1,7 +1,8 @@
 import Head from 'next/head'
 import { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
+import { selectAddress } from '@/store/accountSlice'
 import {
-  Badge,
   Box,
   Flex,
   Heading,
@@ -18,109 +19,103 @@ import {
 } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import cw721 from '@/utils/client/rest/contract/cw721'
-import { trimAddress, getCollectionName, isIBC } from '@/utils/helpers'
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-  CopyIcon,
 } from '@chakra-ui/icons'
 
-interface Collection {
+interface NFT {
   title: string
-  contract: string
-  type: string
+  id: string
+  owner: string
 }
 
 const PER_PAGE = 15
 
 export default function Collections() {
-  const [contracts, setContracts] = useState<string[]>([])
-  const [isLoadingContracts, setIsLoadingContracts] = useState(false)
-  const [collections, setCollections] = useState<Collection[]>([])
+  const address = useSelector(selectAddress)
+
+  const [tokens, setTokens] = useState<string[]>([])
+  const [isLoadingTokens, setIsLoadingTokens] = useState(true)
+  const [nfts, setNFTs] = useState<NFT[]>([])
 
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
 
   const router = useRouter()
+  const { id } = router.query
 
-  const getAllContracts = async () => {
-    setIsLoadingContracts(true)
-    const allContracts = await cw721.getAllContracts()
-    setIsLoadingContracts(false)
-    setContracts(allContracts)
-  }
-
-  const copyAddress = (contract: string) => {
-    navigator.clipboard.writeText(contract)
+  const getAllTokens = async (contractAddress: string) => {
+    const allTokens = await cw721.getAllTokens(contractAddress)
+    setIsLoadingTokens(false)
+    setTokens(allTokens.tokens)
   }
 
   useEffect(() => {
-    if (!contracts.length) {
-      getAllContracts()
-    } else {
-      setTotalPages(Math.ceil(contracts.length / PER_PAGE))
+    if (isLoadingTokens && id) {
+      getAllTokens(id as string)
     }
-  }, [contracts])
+  }, [isLoadingTokens, id])
 
   useEffect(() => {
-    if (contracts.length) {
+    if (tokens.length) {
+      setTotalPages(Math.ceil(tokens.length / PER_PAGE))
+    }
+  }, [tokens])
+
+  useEffect(() => {
+    if (tokens.length) {
       const start = (page - 1) * PER_PAGE
       const end = start + PER_PAGE
-      const items = contracts.slice(start, end).map((item) => {
+      const items = tokens.slice(start, end).map((item) => {
         return {
           title: '',
-          contract: item,
-          type: '',
+          id: item,
+          owner: '',
         }
       })
-      setCollections(items)
+      setNFTs(items)
     }
-  }, [contracts, page])
+  }, [tokens, page])
 
-  useEffect(() => {
-    if (collections.length && !collections[0].title) {
-      updateCollections()
-    }
-  }, [collections])
+  //   useEffect(() => {
+  //     if (collections.length && !collections[0].title) {
+  //       updateCollections()
+  //     }
+  //   }, [collections])
 
-  const updateCollections = async () => {
-    const promiseInfos = collections.map((item) =>
-      cw721.getContractInfo(item.contract)
-    )
-    const infos = await Promise.all(promiseInfos)
-    const items = collections.map((item) => {
-      const info = infos.find((info) => info.contract === item.contract)
-      if (info) {
-        return {
-          title: getCollectionName(info.name),
-          contract: item.contract,
-          type: isIBC(info.name) ? 'IBC' : 'Native',
-        }
-      }
-      return item
-    })
-    setCollections(items)
-  }
-
-  const handleClick = (contract: string) => {
-    router.push('/collections/' + contract)
-  }
+  //   const updateCollections = async () => {
+  //     const promiseInfos = collections.map((item) =>
+  //       cw721.getContractInfo(item.contract)
+  //     )
+  //     const infos = await Promise.all(promiseInfos)
+  //     const items = collections.map((item) => {
+  //       const info = infos.find((info) => info.contract === item.contract)
+  //       if (info) {
+  //         return {
+  //           title: getCollectionName(info.name),
+  //           contract: item.contract,
+  //           type: isIBC(info.name) ? 'IBC' : 'Native',
+  //         }
+  //       }
+  //       return item
+  //     })
+  //     setCollections(items)
+  //   }
 
   return (
     <>
       <Head>
-        <title>Stargaze | Collections</title>
-        <meta name="description" content="Stargaze | Collections" />
+        <title>Stargaze | List NFTs</title>
+        <meta name="description" content="Stargaze | List NFTs" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
         <Flex alignItems={'center'} flexDirection={'column'} gap={8}>
-          <Heading size={'lg'} mb={6}>
-            Collections
-          </Heading>
+          <Heading size={'lg'}>List NFTs</Heading>
           <Box w={'full'}>
             <TableContainer>
               <Table variant="simple">
@@ -133,7 +128,7 @@ export default function Collections() {
                       borderTopColor={'gray.500'}
                       w={500}
                     >
-                      Title
+                      NFT Title
                     </Th>
                     <Th
                       textColor={'stargaze.500'}
@@ -141,7 +136,7 @@ export default function Collections() {
                       borderBottomColor={'gray.500'}
                       borderTopColor={'gray.500'}
                     >
-                      Contract
+                      NFT ID
                     </Th>
                     <Th
                       textColor={'stargaze.500'}
@@ -149,47 +144,22 @@ export default function Collections() {
                       borderBottomColor={'gray.500'}
                       borderTopColor={'gray.500'}
                     >
-                      Type
+                      Owner
                     </Th>
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {collections.map((item) => (
-                    <Tr
-                      key={item.contract}
-                      _hover={{ background: 'gray.800' }}
-                      cursor="pointer"
-                      onClick={() => handleClick(item.contract)}
-                    >
+                  {nfts.map((item) => (
+                    <Tr key={item.id}>
                       <Td borderBottomColor={'gray.500'}>
                         {item.title.length > 55
                           ? item.title.slice(0, 52) + '...'
                           : item.title}
                       </Td>
                       <Td borderBottomColor={'gray.500'}>
-                        {
-                          <Flex alignItems={'center'}>
-                            <Text w={40}>
-                              {trimAddress(item.contract, 5, 6)}
-                            </Text>
-                            <IconButton
-                              size={'sm'}
-                              variant={'ghost'}
-                              aria-label="Copy Address"
-                              _hover={{ background: 'gray.900' }}
-                              icon={<CopyIcon />}
-                              onClick={() => copyAddress(item.contract)}
-                            />
-                          </Flex>
-                        }
+                        <Text w={40}>{item.id}</Text>
                       </Td>
-                      <Td borderBottomColor={'gray.500'}>
-                        {item.type === 'Native' ? (
-                          <Badge colorScheme="stargaze">{item.type}</Badge>
-                        ) : (
-                          <Badge colorScheme="blue">{item.type}</Badge>
-                        )}
-                      </Td>
+                      <Td borderBottomColor={'gray.500'}>{item.owner}</Td>
                     </Tr>
                   ))}
                 </Tbody>
