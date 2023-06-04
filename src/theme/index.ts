@@ -4,7 +4,7 @@ import { components } from './components'
 
 const theme: Theme = extendTheme({
   config: {
-    initialColorMode: 'dark',
+    initialColorMode: 'light',
     useSystemColorMode: false,
   } as Theme['config'],
   fonts: {
@@ -23,7 +23,7 @@ const theme: Theme = extendTheme({
         scrollBehavior: 'smooth',
       },
       body: {
-        colorScheme: 'dark',
+        colorScheme: 'light',
       },
       '::selection': {
         backgroundColor: '#90cdf4',
