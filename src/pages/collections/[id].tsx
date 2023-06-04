@@ -7,6 +7,7 @@ import {
   Flex,
   Heading,
   IconButton,
+  Spinner,
   Table,
   TableContainer,
   Tbody,
@@ -24,12 +25,15 @@ import {
   ArrowRightIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  CopyIcon,
+  CheckIcon,
 } from '@chakra-ui/icons'
+import { trimAddress } from '@/utils/helpers'
 
 interface NFT {
-  title: string
   id: string
   owner: string
+  uri: string
 }
 
 const PER_PAGE = 15
@@ -53,6 +57,10 @@ export default function Collections() {
     setTokens(allTokens.tokens)
   }
 
+  const copyAddress = (contract: string) => {
+    navigator.clipboard.writeText(contract)
+  }
+
   useEffect(() => {
     if (isLoadingTokens && id) {
       getAllTokens(id as string)
@@ -71,159 +79,206 @@ export default function Collections() {
       const end = start + PER_PAGE
       const items = tokens.slice(start, end).map((item) => {
         return {
-          title: '',
           id: item,
           owner: '',
+          uri: '',
         }
       })
       setNFTs(items)
     }
   }, [tokens, page])
 
-  //   useEffect(() => {
-  //     if (collections.length && !collections[0].title) {
-  //       updateCollections()
-  //     }
-  //   }, [collections])
+  useEffect(() => {
+    if (nfts.length && !nfts[0].owner) {
+      updateNFTs()
+    }
+  }, [nfts])
 
-  //   const updateCollections = async () => {
-  //     const promiseInfos = collections.map((item) =>
-  //       cw721.getContractInfo(item.contract)
-  //     )
-  //     const infos = await Promise.all(promiseInfos)
-  //     const items = collections.map((item) => {
-  //       const info = infos.find((info) => info.contract === item.contract)
-  //       if (info) {
-  //         return {
-  //           title: getCollectionName(info.name),
-  //           contract: item.contract,
-  //           type: isIBC(info.name) ? 'IBC' : 'Native',
-  //         }
-  //       }
-  //       return item
-  //     })
-  //     setCollections(items)
-  //   }
+  const updateNFTs = async () => {
+    const promiseInfos = nfts.map((item) =>
+      cw721.getAllNFTInfo(id as string, item.id)
+    )
+    const infos = await Promise.all(promiseInfos)
+    const items = nfts.map((item) => {
+      const info = infos.find((info) => info.id === item.id)
+      if (info) {
+        return {
+          id: item.id,
+          owner: info.access.owner,
+          uri: info.info.token_uri,
+        }
+      }
+      return item
+    })
+    setNFTs(items)
+  }
 
   return (
     <>
       <Head>
-        <title>Stargaze | List NFTs</title>
-        <meta name="description" content="Stargaze | List NFTs" />
+        <title>Stargaze | Detail Collection</title>
+        <meta name="description" content="Stargaze | Detail Collection" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
         <Flex alignItems={'center'} flexDirection={'column'} gap={8}>
-          <Heading size={'lg'}>List NFTs</Heading>
-          <Box w={'full'}>
-            <TableContainer>
-              <Table variant="simple">
-                <Thead>
-                  <Tr>
-                    <Th
-                      textColor={'stargaze.500'}
-                      borderTopWidth={1}
-                      borderBottomColor={'gray.500'}
-                      borderTopColor={'gray.500'}
-                      w={500}
-                    >
-                      NFT Title
-                    </Th>
-                    <Th
-                      textColor={'stargaze.500'}
-                      borderTopWidth={1}
-                      borderBottomColor={'gray.500'}
-                      borderTopColor={'gray.500'}
-                    >
-                      NFT ID
-                    </Th>
-                    <Th
-                      textColor={'stargaze.500'}
-                      borderTopWidth={1}
-                      borderBottomColor={'gray.500'}
-                      borderTopColor={'gray.500'}
-                    >
-                      Owner
-                    </Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {nfts.map((item) => (
-                    <Tr key={item.id}>
-                      <Td borderBottomColor={'gray.500'}>
-                        {item.title.length > 55
-                          ? item.title.slice(0, 52) + '...'
-                          : item.title}
-                      </Td>
-                      <Td borderBottomColor={'gray.500'}>
-                        <Text w={40}>{item.id}</Text>
-                      </Td>
-                      <Td borderBottomColor={'gray.500'}>{item.owner}</Td>
+          <Heading size={'lg'}>Detail Collection</Heading>
+          {isLoadingTokens ? (
+            <Spinner
+              thickness="4px"
+              speed="0.65s"
+              emptyColor="gray.200"
+              color="stargaze.500"
+              size="xl"
+            />
+          ) : (
+            <Box w={'full'}>
+              <TableContainer>
+                <Table variant="simple">
+                  <Thead>
+                    <Tr>
+                      <Th
+                        textColor={'stargaze.500'}
+                        borderTopWidth={1}
+                        borderBottomColor={'gray.500'}
+                        borderTopColor={'gray.500'}
+                        w={400}
+                      >
+                        NFT ID
+                      </Th>
+                      <Th
+                        textColor={'stargaze.500'}
+                        borderTopWidth={1}
+                        borderBottomColor={'gray.500'}
+                        borderTopColor={'gray.500'}
+                      >
+                        Owner
+                      </Th>
+                      <Th
+                        textColor={'stargaze.500'}
+                        borderTopWidth={1}
+                        borderBottomColor={'gray.500'}
+                        borderTopColor={'gray.500'}
+                      >
+                        URI
+                      </Th>
                     </Tr>
-                  ))}
-                </Tbody>
-              </Table>
-              <Flex justifyContent="space-between" m={4} alignItems="center">
-                <Flex>
-                  <Tooltip label="First Page">
-                    <IconButton
-                      colorScheme="stargaze"
-                      onClick={() => setPage(1)}
-                      isDisabled={page === 1}
-                      icon={<ArrowLeftIcon h={3} w={3} />}
-                      mr={4}
-                      aria-label="First Page"
-                    />
-                  </Tooltip>
-                  <Tooltip label="Previous Page">
-                    <IconButton
-                      colorScheme="stargaze"
-                      onClick={() => setPage(page - 1)}
-                      isDisabled={page === 1}
-                      icon={<ChevronLeftIcon h={6} w={6} />}
-                      aria-label="Previous Page"
-                    />
-                  </Tooltip>
-                </Flex>
+                  </Thead>
+                  <Tbody>
+                    {nfts.map((item) => (
+                      <Tr key={item.id}>
+                        <Td borderBottomColor={'gray.500'}>
+                          <Flex alignItems={'center'} gap={3}>
+                            <Text>{item.id}</Text>
+                            {item.owner !== '' && item.owner === address && (
+                              <Tooltip label="Owned">
+                                <CheckIcon color={'green'} />
+                              </Tooltip>
+                            )}
+                          </Flex>
+                        </Td>
+                        <Td borderBottomColor={'gray.500'}>
+                          {
+                            <Flex alignItems={'center'}>
+                              <Text w={40}>
+                                {trimAddress(item.owner, 5, 6)}
+                              </Text>
+                              <IconButton
+                                size={'sm'}
+                                variant={'ghost'}
+                                aria-label="Copy Address"
+                                _hover={{ background: 'gray.900' }}
+                                icon={<CopyIcon />}
+                                onClick={() => copyAddress(item.owner)}
+                              />
+                            </Flex>
+                          }
+                        </Td>
+                        <Td borderBottomColor={'gray.500'}>
+                          {
+                            <Flex alignItems={'center'}>
+                              <Text w={60}>
+                                {item.uri.length > 30
+                                  ? item.uri.slice(0, 27) + '...'
+                                  : item.uri}
+                              </Text>
+                              <IconButton
+                                size={'sm'}
+                                variant={'ghost'}
+                                aria-label="Copy URI"
+                                _hover={{ background: 'gray.900' }}
+                                icon={<CopyIcon />}
+                                onClick={() => copyAddress(item.uri)}
+                              />
+                            </Flex>
+                          }
+                        </Td>
+                      </Tr>
+                    ))}
+                  </Tbody>
+                </Table>
+                <Flex justifyContent="space-between" m={4} alignItems="center">
+                  <Flex>
+                    <Tooltip label="First Page">
+                      <IconButton
+                        colorScheme="stargaze"
+                        onClick={() => setPage(1)}
+                        isDisabled={page === 1}
+                        icon={<ArrowLeftIcon h={3} w={3} />}
+                        mr={4}
+                        aria-label="First Page"
+                      />
+                    </Tooltip>
+                    <Tooltip label="Previous Page">
+                      <IconButton
+                        colorScheme="stargaze"
+                        onClick={() => setPage(page - 1)}
+                        isDisabled={page === 1}
+                        icon={<ChevronLeftIcon h={6} w={6} />}
+                        aria-label="Previous Page"
+                      />
+                    </Tooltip>
+                  </Flex>
 
-                <Flex alignItems="center">
-                  <Text flexShrink="0" mr={8}>
-                    Page{' '}
-                    <Text fontWeight="bold" as="span">
-                      {page}
-                    </Text>{' '}
-                    of{' '}
-                    <Text fontWeight="bold" as="span">
-                      {totalPages}
+                  <Flex alignItems="center">
+                    <Text flexShrink="0" mr={8}>
+                      Page{' '}
+                      <Text fontWeight="bold" as="span">
+                        {page}
+                      </Text>{' '}
+                      of{' '}
+                      <Text fontWeight="bold" as="span">
+                        {totalPages}
+                      </Text>
                     </Text>
-                  </Text>
-                </Flex>
+                  </Flex>
 
-                <Flex>
-                  <Tooltip label="Next Page">
-                    <IconButton
-                      colorScheme="stargaze"
-                      onClick={() => setPage(page + 1)}
-                      isDisabled={page === totalPages}
-                      icon={<ChevronRightIcon h={6} w={6} />}
-                      aria-label="Next Page"
-                    />
-                  </Tooltip>
-                  <Tooltip label="Last Page">
-                    <IconButton
-                      colorScheme="stargaze"
-                      onClick={() => setPage(totalPages)}
-                      isDisabled={page === totalPages}
-                      icon={<ArrowRightIcon h={3} w={3} />}
-                      ml={4}
-                      aria-label="Last Page"
-                    />
-                  </Tooltip>
+                  <Flex>
+                    <Tooltip label="Next Page">
+                      <IconButton
+                        colorScheme="stargaze"
+                        onClick={() => setPage(page + 1)}
+                        isDisabled={page === totalPages}
+                        icon={<ChevronRightIcon h={6} w={6} />}
+                        aria-label="Next Page"
+                      />
+                    </Tooltip>
+                    <Tooltip label="Last Page">
+                      <IconButton
+                        colorScheme="stargaze"
+                        onClick={() => setPage(totalPages)}
+                        isDisabled={page === totalPages}
+                        icon={<ArrowRightIcon h={3} w={3} />}
+                        ml={4}
+                        aria-label="Last Page"
+                      />
+                    </Tooltip>
+                  </Flex>
                 </Flex>
-              </Flex>
-            </TableContainer>
-          </Box>
+              </TableContainer>
+            </Box>
+          )}
         </Flex>
       </main>
     </>

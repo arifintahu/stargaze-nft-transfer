@@ -15,6 +15,17 @@ interface ContractInfo {
   contract?: string
 }
 
+interface AllNFTInfo {
+  access: {
+    owner: string
+    approvals: string[]
+  }
+  info: {
+    token_uri: string
+  }
+  id: string
+}
+
 class CW721 {
   private readonly chain: Chain
   constructor() {
@@ -99,6 +110,28 @@ class CW721 {
     )
 
     return response.data
+  }
+
+  public async getAllNFTInfo(
+    contractAddress: string,
+    tokenId: string
+  ): Promise<AllNFTInfo> {
+    const query = {
+      all_nft_info: {
+        token_id: tokenId,
+      },
+    }
+    const queryData = btoa(JSON.stringify(query))
+    const response: { data: AllNFTInfo } = await querySmartContractState(
+      this.chain.rest,
+      contractAddress,
+      queryData
+    )
+
+    return {
+      ...response.data,
+      id: tokenId,
+    }
   }
 }
 
