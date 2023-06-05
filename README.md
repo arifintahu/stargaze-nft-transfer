@@ -11,7 +11,7 @@
   </p>
 </div>
 
-`Stargaze NFT Transfer` is an UI for CW721 contract. It enables the transfer of NFTs from Stargaze to the different chain through IBC transfer.
+`Stargaze NFT Transfer` is an UI for Stargaze ICS721. It enables the transfer of NFTs from Stargaze to the different chain through IBC transfer.
 
 ## Features
 
