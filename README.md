@@ -1,38 +1,37 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+<div align="center">
+  <h1 align="center">Stargaze NFT Transfer</h1>
 
-## Getting Started
+  <p align="center">
+    Stargaze IBC NFT Transfer and Collections
+    <br />
+    <br />
+    <a href="https://github.com/arifintahu/stargaze-nft-transfer/issues">Report Issues</a>
+    ·
+    <a href="https://github.com/arifintahu/stargaze-nft-transfer/issues">Request Feature</a>
+  </p>
+</div>
 
-First, run the development server:
+`Stargaze NFT Transfer` is an UI for CW721 contract. It enables the transfer of NFTs from Stargaze to the different chain through IBC transfer.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+## Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- Displays all NFT collections
+- Connects to Keplr Wallet
+- Displays owned NFT collections
+- IBC NFT transfer
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+## Contributing
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are greatly appreciated.
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement". Don't forget to give the project a star! Thanks again!
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+1. Fork the project
+2. Create your feature branch ~ `git checkout -b feature/feature-name`
+3. Commit your changes ~ `git commit -m 'Add some feature-name'`
+4. Push to the branch ~ `git push origin feature/feature-name`
+5. Open a Pull Request to original repo branch `main`
 
-## Learn More
+## Contributors
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+[@arifintahu](https://github.com/arifintahu)
