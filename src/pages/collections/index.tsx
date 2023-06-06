@@ -1,11 +1,14 @@
 import Head from 'next/head'
-import { useEffect, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 import {
   Badge,
   Box,
   Flex,
   Heading,
   IconButton,
+  Input,
+  InputGroup,
+  InputLeftElement,
   Spinner,
   Table,
   TableContainer,
@@ -26,6 +29,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   CopyIcon,
+  SearchIcon,
 } from '@chakra-ui/icons'
 
 interface Collection {
@@ -38,8 +42,11 @@ const PER_PAGE = 15
 
 export default function Collections() {
   const [contracts, setContracts] = useState<string[]>([])
-  const [isLoadingContracts, setIsLoadingContracts] = useState(false)
+  const [isLoadingContracts, setIsLoadingContracts] = useState(true)
   const [collections, setCollections] = useState<Collection[]>([])
+
+  const [filteredContracts, setFilteredContracts] = useState<string[]>([])
+  const [search, setSearch] = useState('')
 
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
@@ -47,7 +54,6 @@ export default function Collections() {
   const router = useRouter()
 
   const getAllContracts = async () => {
-    setIsLoadingContracts(true)
     const allContracts = await cw721.getAllContracts()
     setIsLoadingContracts(false)
     setContracts(allContracts)
@@ -58,27 +64,32 @@ export default function Collections() {
   }
 
   useEffect(() => {
-    if (!contracts.length) {
+    if (isLoadingContracts) {
       getAllContracts()
-    } else {
-      setTotalPages(Math.ceil(contracts.length / PER_PAGE))
     }
-  }, [contracts])
+  }, [contracts, isLoadingContracts])
 
   useEffect(() => {
-    if (contracts.length) {
-      const start = (page - 1) * PER_PAGE
-      const end = start + PER_PAGE
-      const items = contracts.slice(start, end).map((item) => {
-        return {
-          title: '',
-          contract: item,
-          type: '',
-        }
-      })
-      setCollections(items)
-    }
-  }, [contracts, page])
+    const filtered = contracts.filter((contract) => contract.includes(search))
+    setFilteredContracts(filtered)
+  }, [search, contracts])
+
+  useEffect(() => {
+    setTotalPages(Math.ceil(filteredContracts.length / PER_PAGE))
+  }, [filteredContracts])
+
+  useEffect(() => {
+    const start = (page - 1) * PER_PAGE
+    const end = start + PER_PAGE
+    const items = filteredContracts.slice(start, end).map((item) => {
+      return {
+        title: '',
+        contract: item,
+        type: '',
+      }
+    })
+    setCollections(items)
+  }, [filteredContracts, page])
 
   useEffect(() => {
     if (collections.length && !collections[0].title) {
@@ -109,6 +120,10 @@ export default function Collections() {
     router.push('/collections/' + contract)
   }
 
+  const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value)
+  }
+
   return (
     <>
       <Head>
@@ -122,6 +137,19 @@ export default function Collections() {
           <Heading size={'lg'} mb={6}>
             Collections
           </Heading>
+          <InputGroup borderColor={'transparent'}>
+            <InputLeftElement pointerEvents="none">
+              <SearchIcon color="gray.300" />
+            </InputLeftElement>
+            <Input
+              type="text"
+              bg={'gray.900'}
+              focusBorderColor="stargaze.500"
+              _hover={{ borderColor: 'transparent' }}
+              placeholder="Search by contract address..."
+              onChange={handleSearch}
+            />
+          </InputGroup>
           {isLoadingContracts ? (
             <Spinner
               thickness="4px"
