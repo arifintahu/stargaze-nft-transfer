@@ -1,6 +1,6 @@
 import { Box } from '@chakra-ui/react'
-import React from 'react'
-import { Select } from 'chakra-react-select'
+import { useState, useEffect } from 'react'
+import { Select, InputActionMeta } from 'chakra-react-select'
 
 export interface Option {
   value: string
@@ -15,6 +15,8 @@ interface SelectSearchProps {
   placeholder?: string
 }
 
+const MAX_ITEMS = 20
+
 export default function SelectSearch({
   options,
   onChange,
@@ -22,6 +24,26 @@ export default function SelectSearch({
   isLoading = false,
   placeholder = 'Select option',
 }: SelectSearchProps) {
+  const [slicedOptions, setSlicedOptions] = useState<Option[]>([])
+  const [search, setSearch] = useState('')
+
+  useEffect(() => {
+    if (options.length && search.length > 1) {
+      const filteredOptions = options.filter((item) =>
+        item.value.includes(search)
+      )
+      setSlicedOptions(filteredOptions.slice(0, MAX_ITEMS))
+    } else {
+      setSlicedOptions(options.slice(0, MAX_ITEMS))
+    }
+  }, [options, search])
+
+  const handleSearch = (newValue: string, actionMeta: InputActionMeta) => {
+    if (newValue.length && actionMeta.action === 'input-change') {
+      setSearch(newValue)
+    }
+  }
+
   return (
     <Box>
       <Select
@@ -44,8 +66,9 @@ export default function SelectSearch({
             borderColor: 'whiteAlpha.200',
           }),
         }}
-        options={options}
+        options={slicedOptions}
         onChange={onChange}
+        onInputChange={handleSearch}
         value={value}
       />
     </Box>

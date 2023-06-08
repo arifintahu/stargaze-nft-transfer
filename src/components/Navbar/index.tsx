@@ -64,7 +64,7 @@ export default function Navbar() {
         onClose()
       }
     } else {
-      alert('Please install keplr extension')
+      alert('Please install Keplr Extension')
     }
   }
 

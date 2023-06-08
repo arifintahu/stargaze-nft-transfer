@@ -94,7 +94,7 @@ export default function Home() {
       setToken(null)
     } else {
       toast({
-        title: 'Please install keplr extension',
+        title: 'Please install Keplr Extension',
         status: 'warning',
         isClosable: true,
       })
@@ -249,7 +249,7 @@ export default function Home() {
                 value={contract}
                 onChange={handleSelectContract}
                 isLoading={isLoadingContracts}
-                placeholder="Select contract address"
+                placeholder="Search contract address"
               />
             </Box>
             <Box
