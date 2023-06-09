@@ -73,11 +73,7 @@ export default function Home() {
 
   useEffect(() => {
     if (destChain && address && token) {
-      const converted = convertAddress(
-        address,
-        destChain.address.prefix,
-        destChain.address.isETH
-      )
+      const converted = convertAddress(address, destChain.address.prefix)
       setDestAddress(converted)
     }
   }, [destChain, address, token])
