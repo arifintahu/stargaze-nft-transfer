@@ -23,7 +23,8 @@
       "name": "IRISnet Testnet",
       "logo": "/assets/irisnet.svg",
       "address": {
-        "prefix": "iaa"
+        "prefix": "iaa",
+        "isETH": false
       },
       "nftTransfer": {
         "channel": "channel-207"
@@ -34,10 +35,35 @@
       "name": "Omniflix Testnet",
       "logo": "/assets/omniflix.svg",
       "address": {
-        "prefix": "omniflix"
+        "prefix": "omniflix",
+        "isETH": false
       },
       "nftTransfer": {
         "channel": "channel-209"
+      }
+    },
+    {
+      "id": "uni-6",
+      "name": "Juno Testnet",
+      "logo": "/assets/juno.svg",
+      "address": {
+        "prefix": "juno",
+        "isETH": false
+      },
+      "nftTransfer": {
+        "channel": "channel-230"
+      }
+    },
+    {
+      "id": "uptick_7000-2",
+      "name": "Uptick Testnet",
+      "logo": "/assets/uptick.png",
+      "address": {
+        "prefix": "uptick",
+        "isETH": true
+      },
+      "nftTransfer": {
+        "channel": "channel-203"
       }
     }
   ]

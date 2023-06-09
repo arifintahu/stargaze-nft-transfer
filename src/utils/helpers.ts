@@ -1,4 +1,4 @@
-import { bech32 } from 'bech32'
+import { bech32, bech32m } from 'bech32'
 import { Coin } from '@/config/types'
 import { Balance } from '@/utils/client/rest/cosmos/bank'
 import { getChain } from '@/config'
@@ -25,9 +25,17 @@ export const showBalance = (balances: Balance[], coin: Coin) => {
   return `${convertToDenom.toLocaleString()} ${coin.denom}`
 }
 
-export const convertAddress = (address: string, toPrefix: string): string => {
+export const convertAddress = (
+  address: string,
+  toPrefix: string,
+  isToETH: boolean = false
+): string => {
   const decoded = bech32.decode(address)
-  return bech32.encode(toPrefix, decoded.words)
+  if (isToETH) {
+    return bech32m.encode(toPrefix, decoded.words)
+  } else {
+    return bech32.encode(toPrefix, decoded.words)
+  }
 }
 
 export const getNanoTimestamp = (minutes: number): string => {

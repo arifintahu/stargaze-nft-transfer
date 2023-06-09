@@ -73,7 +73,11 @@ export default function Home() {
 
   useEffect(() => {
     if (destChain && address && token) {
-      const converted = convertAddress(address, destChain.address.prefix)
+      const converted = convertAddress(
+        address,
+        destChain.address.prefix,
+        destChain.address.isETH
+      )
       setDestAddress(converted)
     }
   }, [destChain, address, token])
@@ -336,7 +340,7 @@ export default function Home() {
           <ModalHeader>Select destination chain</ModalHeader>
           <ModalCloseButton />
           <ModalBody px={6} pb={8}>
-            <SimpleGrid columns={2} spacing={10}>
+            <SimpleGrid columns={2} spacing={6}>
               {destChains.map((chain) => (
                 <Flex
                   key={chain.id}

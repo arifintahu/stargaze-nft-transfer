@@ -6,6 +6,7 @@ export interface Coin {
 
 export interface Address {
   readonly prefix: string
+  readonly isETH: boolean
 }
 
 export interface Chain {
