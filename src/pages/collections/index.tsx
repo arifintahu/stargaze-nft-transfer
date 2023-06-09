@@ -36,6 +36,7 @@ interface Collection {
   title: string
   contract: string
   type: string
+  totalTokens: number
 }
 
 const PER_PAGE = 15
@@ -43,6 +44,7 @@ const PER_PAGE = 15
 export default function Collections() {
   const [contracts, setContracts] = useState<string[]>([])
   const [isLoadingContracts, setIsLoadingContracts] = useState(true)
+  const [isLoadingInfo, setIsLoadingInfo] = useState(false)
   const [collections, setCollections] = useState<Collection[]>([])
 
   const [filteredContracts, setFilteredContracts] = useState<string[]>([])
@@ -86,6 +88,7 @@ export default function Collections() {
         title: '',
         contract: item,
         type: '',
+        totalTokens: 0,
       }
     })
     setCollections(items)
@@ -98,22 +101,30 @@ export default function Collections() {
   }, [collections])
 
   const updateCollections = async () => {
-    const promiseInfos = collections.map((item) =>
-      cw721.getContractInfo(item.contract)
-    )
-    const infos = await Promise.all(promiseInfos)
+    setIsLoadingInfo(true)
+    const promiseContractInfos = collections.map(async (item) => {
+      return {
+        info: await cw721.getContractInfo(item.contract),
+        tokens: await cw721.getAllTokens(item.contract),
+      }
+    })
+    const contractInfos = await Promise.all(promiseContractInfos)
     const items = collections.map((item) => {
-      const info = infos.find((info) => info.contract === item.contract)
-      if (info) {
+      const contractInfo = contractInfos.find(
+        (val) => val.info.contract === item.contract
+      )
+      if (contractInfo) {
         return {
-          title: getCollectionName(info.name),
+          title: getCollectionName(contractInfo.info.name),
           contract: item.contract,
-          type: isIBC(info.name) ? 'IBC' : 'Native',
+          type: isIBC(contractInfo.info.name) ? 'IBC' : 'Native',
+          totalTokens: contractInfo.tokens.tokens.length,
         }
       }
       return item
     })
     setCollections(items)
+    setIsLoadingInfo(false)
   }
 
   const handleClick = (contract: string) => {
@@ -122,6 +133,7 @@ export default function Collections() {
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value)
+    setPage(1)
   }
 
   return (
@@ -171,7 +183,18 @@ export default function Collections() {
                         borderTopColor={'gray.500'}
                         w={500}
                       >
-                        Title
+                        <Flex gap={1}>
+                          <Text>Title</Text>
+                          {isLoadingInfo && (
+                            <Spinner
+                              thickness="2px"
+                              speed="0.85s"
+                              emptyColor="gray.200"
+                              color="stargaze.500"
+                              size="sm"
+                            />
+                          )}
+                        </Flex>
                       </Th>
                       <Th
                         textColor={'stargaze.500'}
@@ -187,7 +210,37 @@ export default function Collections() {
                         borderBottomColor={'gray.500'}
                         borderTopColor={'gray.500'}
                       >
-                        Type
+                        <Flex gap={1}>
+                          <Text>Number NFTs</Text>
+                          {isLoadingInfo && (
+                            <Spinner
+                              thickness="2px"
+                              speed="0.85s"
+                              emptyColor="gray.200"
+                              color="stargaze.500"
+                              size="sm"
+                            />
+                          )}
+                        </Flex>
+                      </Th>
+                      <Th
+                        textColor={'stargaze.500'}
+                        borderTopWidth={1}
+                        borderBottomColor={'gray.500'}
+                        borderTopColor={'gray.500'}
+                      >
+                        <Flex gap={1}>
+                          <Text>Type</Text>
+                          {isLoadingInfo && (
+                            <Spinner
+                              thickness="2px"
+                              speed="0.85s"
+                              emptyColor="gray.200"
+                              color="stargaze.500"
+                              size="sm"
+                            />
+                          )}
+                        </Flex>
                       </Th>
                     </Tr>
                   </Thead>
@@ -220,6 +273,9 @@ export default function Collections() {
                               />
                             </Flex>
                           }
+                        </Td>
+                        <Td borderBottomColor={'gray.500'}>
+                          {item.title === '' ? '' : item.totalTokens}
                         </Td>
                         <Td borderBottomColor={'gray.500'}>
                           {item.type === 'Native' ? (
