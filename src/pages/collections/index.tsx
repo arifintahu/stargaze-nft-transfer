@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import { ChangeEvent, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Badge,
   Box,
@@ -48,6 +48,7 @@ export default function Collections() {
   const [collections, setCollections] = useState<Collection[]>([])
 
   const [filteredContracts, setFilteredContracts] = useState<string[]>([])
+  const [query, setQuery] = useState('')
   const [search, setSearch] = useState('')
 
   const [page, setPage] = useState(1)
@@ -100,6 +101,11 @@ export default function Collections() {
     }
   }, [collections])
 
+  useEffect(() => {
+    const timeOutId = setTimeout(() => setSearch(query), 900)
+    return () => clearTimeout(timeOutId)
+  }, [query])
+
   const updateCollections = async () => {
     setIsLoadingInfo(true)
     const promiseContractInfos = collections.map(async (item) => {
@@ -131,11 +137,6 @@ export default function Collections() {
     router.push('/collections/' + contract)
   }
 
-  const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value)
-    setPage(1)
-  }
-
   return (
     <>
       <Head>
@@ -159,7 +160,7 @@ export default function Collections() {
               focusBorderColor="stargaze.500"
               _hover={{ borderColor: 'transparent' }}
               placeholder="Search by contract address..."
-              onChange={handleSearch}
+              onChange={(event) => setQuery(event.target.value)}
             />
           </InputGroup>
           {isLoadingContracts ? (
