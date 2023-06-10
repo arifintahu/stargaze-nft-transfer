@@ -250,10 +250,13 @@ export default function Collections() {
                       <Tr
                         key={item.contract}
                         _hover={{ background: 'gray.800' }}
-                        cursor="pointer"
-                        onClick={() => handleClick(item.contract)}
                       >
-                        <Td borderBottomColor={'gray.500'}>
+                        <Td
+                          borderBottomColor={'gray.500'}
+                          _hover={{ color: 'stargaze.500' }}
+                          cursor="pointer"
+                          onClick={() => handleClick(item.contract)}
+                        >
                           {item.title.length > 55
                             ? item.title.slice(0, 52) + '...'
                             : item.title}
@@ -261,14 +264,22 @@ export default function Collections() {
                         <Td borderBottomColor={'gray.500'}>
                           {
                             <Flex alignItems={'center'}>
-                              <Text w={40}>
+                              <Text
+                                w={40}
+                                _hover={{ color: 'stargaze.500' }}
+                                cursor="pointer"
+                                onClick={() => handleClick(item.contract)}
+                              >
                                 {trimAddress(item.contract, 5, 6)}
                               </Text>
                               <IconButton
                                 size={'sm'}
                                 variant={'ghost'}
                                 aria-label="Copy Address"
-                                _hover={{ background: 'gray.900' }}
+                                _hover={{
+                                  background: 'stargaze.500',
+                                  color: 'white',
+                                }}
                                 icon={<CopyIcon />}
                                 onClick={() => copyAddress(item.contract)}
                               />
